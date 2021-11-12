@@ -1,0 +1,33 @@
+EJERCICIOS HADOOP
+Los ejercicios aquí mostrados no se corresponden con el documento original, en este documento los ejercicios son una pequeña guía de inicio a partir de los ejercicios del curso.
+
+1-Mostrar todos los comandos/funcionalidades de hadoop
+   - hadoop fs -> Muestra todas las funcionalidades
+
+2-Listar ficheros y directorios de la raíz asociada a Hadoop
+   - hadoop fs -ls / -> Lista todos los ficheros de la dirección mostrada,
+			Es un comando muy parecido por no decir identico
+			del comando ls de linux
+
+3-Subir un fichero a la plataforma hdfs
+   - hadoop fs -put [nombre del fichero/directorio a copiar] [nombre del destino] -> 
+	Mandamos el fichero/directorio al destino dentro de hadoop en forma de copia.
+
+4-Eliminar un fichero de Hadoop
+   - hadoop fs -rm [ruta al fichero] -> elimina de la plataforma el fichero
+   - hadoop fs -rmdir [ruta al directorio] -> elimina el directorio y lo que hay en él
+
+5-Mostrar el contenido de un fichero de hadoop
+   - hadoop fs -cat [ruta del fichero] -> al igual que el comando cat de linux
+					  se puede usar con otras instrucciones como
+					  tail o head
+
+6-Copiar un fichero desde hdfs a la máquina local
+   - hadoop fs -get [ruta de hdfs que quieres] [ruta destino en la máquina] -> es un equivalente
+					al comando cp pero desde la plataforma hadoop al almac. local
+
+
+
+
+
+
