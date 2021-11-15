@@ -1,0 +1,22 @@
+EJERCICIOS PIG
+
+2. Arranca el Shell de Pig en modo local
+ $ pig -x local
+
+3. Carga los datos en pig en una variable llamada “data”. Los nombres de las columnas
+deben ser (key, campana, fecha, tiempo, display, accion, cpc, pais, lugar). Los tipos de
+las columnas deben ser chararray excepto acction y cpc que son int.
+	grunt > data = LOAD '/home/cloudera/cloudera/ejercicios/CursoBigData/ejerciciosPIG/datos_pig.txt' 
+	> USING PigStorage('\t') AS (key:chararray, campana:chararray, fecha:chararray, tiempo:chararray, 
+	> display:chararray, accion:int, cpc:int, pais:chararray, lugar:chararray);
+
+4.Usa el comando DESCRIBE para ver el esquema de la variable “data”
+	grunt > DESCRIBE data;
+
+5.Selecciona las filas de “data” que provengan de USA
+	grunt > dataFromUSA = FILTER data BY pais == 'USA';
+
+6.Listar los datos que contengan en su key el sufijo surf:
+	grunt > dataWithSurf = FILTER data BY key MATCHES 'surf*';
+
+
