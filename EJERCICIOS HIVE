@@ -1,0 +1,16 @@
+EJERCICIOS HIVE
+
+1. Entrar en Hive
+ $ hive
+
+2. Modificar la propiedad correspondiente para mostrar por pantalla las cabeceras de las
+tablas
+ (Dentro de hive):
+ 	hive > set hive.cli.print.header=true;
+	
+	";" es importante
+
+3.Crear una base de datos llamada “cursohivedb” (Dentro de hive):
+	hive > CREATE DATABASE IF NOT EXISTS cursohivedb;
+
+4.
