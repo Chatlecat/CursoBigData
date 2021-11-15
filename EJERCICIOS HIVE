@@ -8,9 +8,88 @@ tablas
  (Dentro de hive):
  	hive > set hive.cli.print.header=true;
 	
-	";" es importante
+	*NOTA: ";" es importante
 
 3.Crear una base de datos llamada “cursohivedb” (Dentro de hive):
 	hive > CREATE DATABASE IF NOT EXISTS cursohivedb;
 
-4.
+4. Situarnos en la base de datos recién creada para trabajar con ella
+ (Dentro de hive):
+	hive > use cursohivedb;
+
+5.Comprobar que la base de datos está vacía
+ (Dentro de Hive):
+	hive > show tables;
+
+6.Crear una tabla llamada “iris” en nuestra base de datos que contenga 5 columnas
+(s_length float,s_width float,p_length float,p_width float,clase string) cuyos campos
+estén separados por comas (ROW FORMAT DELIMITED FIELDS TERMINATED BY ',')
+(Dentro de Hive):
+	hive > CREATE TABLE IF NOT EXISTS iris ( s_length float,
+	     > s_width float, p_length float, p_width float, clase String)
+	     > ROW FORMAT DELIMITED
+	     > FIELDS TERMINATED BY ',';
+
+7.Comprobar que la tabla se ha creado y el tipado de sus columnas
+	a. hive > show tables; 
+	b. hive > show create table iris;
+b. enseña todas las propiedades de la tabla creada iris,
+el campo del delimitador de columnas se llama 'field.delim'
+
+8.Importar el fichero “iris_completo.txt” al local file system del cluster en la carpeta
+/home/cloudera/ejercicios/ejercicios_HIVE
+
+DONE
+
+9.Copiar el fichero a HDFS en la ruta /user/cloudera/hive. Reailzar las acciones necesarias.
+
+	$ hadoop fs -mkdir /user/cloudera/hive
+	$ hadoop fs -put ~/ejerciciosHIVE/iris_completo.txt /user/cloudera/hive
+
+10. Comprueba que el fichero está en la ruta en HDFS indicada
+	$ hadoop fs -ls ./hive
+
+11.Importa el fichero en la tabla iris que acabamos de crear desde HDFS
+	hive > load data inpath '/user/cloudera/hive/iris_completo.txt' into table iris;
+12. Comprobar que la table tiene datos
+	hive > select * from iris;
+
+13. Mostrar las 5 primeras filas de la tabla iris
+	hive > select * from iris limit 5;
+
+14. Mostrar solo aquellas filas cuyo s_length sea mayor que 5. Observad que se ejecuta un
+MapReduce y que el tiempo de ejecución es un poco mayor
+	hive > select * from iris where s_length > 5;
+
+15.Seleccionar la media de s_width agrupados por clase. Observad que ahora el tiempo
+de ejecución aumenta considerablemente.
+	hive > select avg(s_width), clase from iris group by clase;
+
+16. Pregunta: vemos que aparece un valor NULL como resultado en la query anterior. ¿Por
+qué? ¿cómo los eliminarías?
+Aparece porque dentro de la tabla hay una fila cuya clase es NULL y cuyos valores son NULL
+Para eliminar estos valores se agrega la clausula "WHERE s_width IS NOT NULL" a la query
+
+17. Insertar en la tabla la siguiente fila (1.0,3.2,4.3,5.7,"Iris-virginica")
+	hive > INSERT INTO TABLE iris VALUES (1.0,3.2,4.3,5.7,"Iris-virginica");
+
+18. Contar el número de ocurrencias de cada clase
+	hive > SELECT COUNT(*), clase FROM iris GROUP BY clase;
+
+19. Seleccionar las clases que tengan más de 45 ocurrencias
+	hive > SELECT COUNT(*), clase FROM iris GROUP BY clase HAVING COUNT(*) > 45;
+
+20. Utilizando la función LEAD, ejecutar una query que devuelva la clase, p_length y el
+LEAD de p_length con Offset=1 y Default_Value =0, particionado por clase y ordenado
+por p_length.
+
+	hive > SELECT clase, p_length, LEAD(p_length, 1, 0) OVER(partition by clase order by p_length asc) FROM iris;
+
+21. Utilizando funciones de ventanas, seleccionar la clase, p_length, s_length, p_width, el
+número de valores distintos de p_length en todo el dataset, el valor máximo de
+s_length por clase y la media de p_width por clase, ordenado por clase y s_length de
+manera descendente. 
+
+	hive > SELECT clase, p_length, s_length, p_width, COUNT(p_length) OVER (PARTITION BY p_length) AS ct_pl, MAX(s_length) OVER (partition by clase) as mx_sl, AVG(p_width) OVER (partition by clase) av_wi FROM iris ORDER BY clase, s_length DESC; 
+
+
