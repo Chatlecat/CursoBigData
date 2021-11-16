@@ -1,0 +1,16 @@
+HIVE									IMPALA
+- Mucho desarrollo detrás, ya están casi todas las funciones   |        - Muchas menos funciones que Hive, no puede usar más de un tipo complejo
+de SQL disponibles.					       |
+- Usa MapReduce						       |	- No usa MapReduce
+- Falla en "rendimiento" es bastante lento al empezar	       |	- Bastante rápido en la mayoría de casos (mientras no sean complejas).
+- Materializa los resultados intermedios, esto es, adquiere    |	- No materializa esos resultados intermedios por lo que la tolerancia a
+tolerancia a fallos y habilita a tener una mayor escalabilidad |          a fallos no existe, un fallo requiere volver a ejecutar la query.
+- Genera las queries en tiempo de compilación		       |	- Genera las queries en tiempo de ejecución
+- Hive no está hecho para aplicaciones o soluciones interac.   |	- Impala fue hecho para soluciones interactivas.
+- Hecho como un MapReduce enfocada a paquetes usando Hadoop    |	- Es más bien usado como un MPP (Massive Parallel Process) database
+- Hive es más usado cuando hace falta una plataforma y se      |	- Impala es más usado para comenzar un proyecto.
+necesitemos mejorarla "constantemente".			       |
+
+
+De todas formas esto es una comparativa de sus características, es mejor verlo como herramientas complementarias.
+
