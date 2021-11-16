@@ -1,0 +1,53 @@
+EJERCICIOS HIVE
+
+1. Entrar en Hive
+ $ hive
+
+2. Modificar la propiedad correspondiente para mostrar por pantalla las cabeceras de las
+tablas
+ (Dentro de hive):
+ 	hive > set hive.cli.print.header=true;
+	
+	*NOTA: ";" es importante
+
+3.Crear una base de datos llamada “cursohivedb” (Dentro de hive):
+	hive > CREATE DATABASE IF NOT EXISTS cursohivedb;
+
+4. Situarnos en la base de datos recién creada para trabajar con ella
+ (Dentro de hive):
+	hive > use cursohivedb;
+
+5.Comprobar que la base de datos está vacía
+ (Dentro de Hive):
+	hive > show tables;
+
+6.Crear una tabla llamada “iris” en nuestra base de datos que contenga 5 columnas
+(s_length float,s_width float,p_length float,p_width float,clase string) cuyos campos
+estén separados por comas (ROW FORMAT DELIMITED FIELDS TERMINATED BY ',')
+(Dentro de Hive):
+	hive > CREATE TABLE IF NOT EXISTS iris ( s_length float,
+	     > s_width float, p_length float, p_width float, clase String)
+	     > ROW FORMAT DELIMITED
+	     > FIELDS TERMINATED BY ',';
+
+7.Comprobar que la tabla se ha creado y el tipado de sus columnas
+	a. hive > show tables; 
+	b. hive > show create table iris;
+b. enseña todas las propiedades de la tabla creada iris,
+el campo del delimitador de columnas se llama 'field.delim'
+
+8.Importar el fichero “iris_completo.txt” al local file system del cluster en la carpeta
+/home/cloudera/ejercicios/ejercicios_HIVE
+
+	hive > INSERT OVERWRITE LOCAL DIRECTORY './cloudera/ejercicios/CursoBigData/ejerciciosHIVE/iris_completo.txt' SELECT * FROM iris;
+
+9.Copiar el fichero a HDFS en la ruta /user/cloudera/hive. Reailzar las acciones necesarias.
+
+	$ hadoop fs -mkdir /user/cloudera/hive
+	$ hadoop fs -put ~/ejerciciosHIVE/iris_completo.txt /user/cloudera/hive
+
+10. Comprueba que el fichero está en la ruta en HDFS indicada
+	$ hadoop fs -ls ./hive
+
+11.
+
