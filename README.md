@@ -16,3 +16,7 @@ AL IGUAL QUE EN HIVE LOS EJERCICIOS ESTÁN CORREGIDOS TAL Y COMO APARECEN EN EL 
 *EJERCICIOS SQOOP*
 
 EJERCICIOS DE SQOOP TERMINADOS, BONUS PARA COMPROBAR LA IMPORTACIÓN DEL FINAL!
+
+*Comparativa de Hive e Impala*
+
+Una pequeña comparativa de estas dos herramientas que se usan normalmente con Hadoop.
