@@ -19,4 +19,16 @@ las columnas deben ser chararray excepto acction y cpc que son int.
 6.Listar los datos que contengan en su key el sufijo surf:
 	grunt > dataWithSurf = FILTER data BY key MATCHES 'surf*';
 
+7. Crear una variable llamada “ordenado” que contenga las columnas de data en el
+siguiente orden: (campaña, fecha, tiempo, key, display, lugar, accion, cpc)
+	grunt > ordenado = FOREACH data GENERATE campana, fecha, tiempo, key, display, lugar, accion, cpc;
+
+8. Guarda el contenido de la variable “ordenado” en una carpeta en el local file system
+de tu MV llamada resultado en la ruta /home/cloudera/ejercicios/pig
+
+	grunt > STORE ordernado INTO 'ruta destino';
+
+9. Comprobar el contenido de la carpeta.
+	Se han creado dos ficheros; uno con los datos ordenados y otro, con el nombre _SUCCESS, vacío.
+
 
