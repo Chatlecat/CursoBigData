@@ -1,0 +1,74 @@
+EJERCICIOS FLUME
+En este caso los ejercicios de Flume como anteriormente pasó con hadoop es más testimonial que haber seguido la guía de ejercicios, aunque se usará.
+
+1.Poner en marcha Flume con un Sequencer de ejemplo
+	El sequencer va a "contar" números y los mostrará por pantalla con 
+	la siguiente configuración.
+
+	1- "Declaramos" los componentes del agente
+		a1.sources = r1 #Nombramos la fuente
+		a1.sinks = k1 #Nombramos el destino
+		a1.channels = c1 #Nombramos los canales
+	2- "Definimos" las características de la fuente (sources)
+		a1.sources.r1.type = seq # En este caso se puede nombrar solo 
+					 # el tipo, aunque existen
+					 # otras configuraciones
+		
+	3- Definimos de la misma manera el destino (sink)
+		a1.sinks.k1.type = logger # logger en este caso serviría para
+					  # sacar por pantalla.
+
+	4- Configuramos el canal de comunicación (channel)
+		a1.channels.c1.type = memory # usar la memoria a modo de buffer
+		a1.channels.c1.capacity = 1000
+		a1.channels.c1.transactionCapacity = 100
+		#capacidad del buffer y capacidad de cada transacción de info.
+	
+	5- Unimos canal con fuente y destino.
+		a1.sources.r1.channels = c1
+		a1.sinks.r1.channel = c1
+		
+		# Solo puede hacer un sink en un canal porque este sink
+		# elimina los datos del canal cuando lo coge, si hubiera
+		# dos sinks podrían quitarse datos el uno al otro.
+
+
+	Ejecutamos el agente
+
+	$ flume-ng agent --conf conf --conf-file [ruta archivo config]
+	  --name a1 -Dflume.root.logger=DEBUG,console 
+ 	
+2. Crear un agente que importe datos desde un spool-dir
+	Vamos a dar por hecho que ya se han hecho los directorios que se necesitan
+
+	En la parte de fuente la cambiamos por:
+	a1.sources.r1.type = spooldir
+	a1.sources.r1.spoolDir = /var/log/apache/flumespool
+	a1.sources.r1.fileHeader = true
+	
+	Volvemos a ejecutar un agente esta vez con otra configuracion
+	$ flume-ng agent --conf conf --conf-file
+	/home/cloudera/example2.conf --name a1 
+	-Dflume.root.logger=DEBUG,console 
+	-Dorg.apache.flume.log.printconfig=true 
+	-Dorg.apache.flume.log.rawdata=true
+	
+	Para comprobar que funciona metemos un archivo en la ruta indicada
+
+3.Por último configura el sink a HDFS.
+	Para configurar esto damos por hecho que se han creado directorios
+	
+	Configuramos el sink
+	a1.sink.k1.type = hdfs
+        a1.sink.k1.hdfs.path = /user/cloudera/flume
+        a1.sink.k1.hdfs.writeFormat = Text
+
+	De nuevo ejecutamos el agente y creamos ficheros en el
+	 respectivo directorio.
+	$ flume-ng agent --conf conf --conf-file
+        /home/cloudera/example2.conf --name a1
+        -Dflume.root.logger=DEBUG,console
+        -Dorg.apache.flume.log.printconfig=true
+        -Dorg.apache.flume.log.rawdata=true
+
+
