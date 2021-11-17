@@ -1,0 +1,20 @@
+EJERCICIOS SPARK
+
+1. Arrancar el shell de spark para scala y familiarizarse con la información que
+aparece por pantalla (Infos, Warnings, versión de Scala y Spark, etc...)
+	$ spark-shell
+	
+	- version Spark 1.6.0
+	- version Scala 2.10.5
+	
+2. Comprobar que se ha creado un contexto "sc" tal y como vimos en la
+documentación.
+	scala > sc
+	res0: org.apache.spark.SparkContext = org.apache.spark.SparkContext@4634837c
+
+3.Usando el comando de autocompletado csobre el SparkContext (sc), podéis ver
+los métodos disponibles. La función de autocompletado consiste en presionar el
+tab después de escribir el objeto SparkContext seguido de un punto.
+	done
+4.Para salir del Shell, escribir "exit" o presionar "Ctrl+C"
+
