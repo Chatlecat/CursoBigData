@@ -18,3 +18,34 @@ tab después de escribir el objeto SparkContext seguido de un punto.
 	done
 4.Para salir del Shell, escribir "exit" o presionar "Ctrl+C"
 
+EXPLORACION DE FICHERO PLANO
+
+1. Crea un RDD llamado “relato” que contenga el contenido del fichero
+utilizando el método “textFile”
+
+	scala > val textFile = sc.textFile("file:/home/BIT/data/relato.txt")
+	# NO OLVIDAR PONER "file:" PARA TRABAJAR EN LOCAL
+	# AUN NO SE HA CREADO EL RDD HAY QUE HACER UNA ACCION PRIMERO
+
+2.Cuenta el número de líneas del RDD (una acción) y observa el resultado.
+Si el resultado es 23 es correcto
+	scala > textFile.count()
+	res1: Long = 23
+
+3.Ejecuta el método "collect()" sobre el RDD y observa el resultado. Recuerda lo
+que comentamos durante el curso sobre cuándo es recomendable el uso de este método.
+
+	~ Es recomendable cuando se trata de pequeños dataset
+	scala > fileText.collect()
+	res2: Array[String] = Array(Two roads diverged in a yellow wood,,
+	And so...
+
+
+4. Usando foreach, haz un display del archivo relato.txt de manera que sea más
+fácil de leer.
+	scala > textFile.foreach((linea:String)=>println(linea))
+
+
+
+
+

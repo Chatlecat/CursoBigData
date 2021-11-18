@@ -59,6 +59,7 @@ MySQL
 4.Usando los argumentos de importación hive mostrados en las slides del curso,
 importar la tabla creada en Mysql en la estructura creada en hive. Usar como conector
 (jdbc:mysql://localhost/bbddMysql) y un solo mapper.
+
 	$ sqoop import --connect jdbc:mysql://localhost/pruebadb --username root --password cloudera --table tabla_de_prueba --hive-import --hive-overwrite --hive-table sqoop_mysql_hive.tabla_prueba_hive -m 1 
 	
 *BONUS: Comprobamos que los datos han sido importados correctamente.
