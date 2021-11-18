@@ -47,5 +47,88 @@ fácil de leer.
 
 
 
+EXPLORACION DE FICHERO PLANO 2
+
+1.Copia la carpeta weblogs contenida en la carpeta de ejercicios de Spark a “/home/BIT/
+data/weblogs/” y revisa su contenido.
+
+2. Escoge uno de los ficheros, ábrelo, y estudia cómo está estructurada cada una de sus
+líneas (datos que contiene, separadores (espacio), etc)
+	116.180.70.237 - 128 [15/Sep/2013:23:59:53 +0100] "GET /KBDOC-00031.html 	
+	HTTP/1.0" 200 1388 "http://www.loudacre.com" "Loudacre CSR Browser"
+
+3. 116.180.70.237 es la IP, 128 el número de usuario y GET /KBDOC-00031.html HTTP/1.0 el
+artículo sobre el que recae la acción.
+
+4. Crea una variable que contenga la ruta del fichero, por ejemplo file:/home/BIT/data/
+weblogs/2013-09-15.log
+	
+	scala > val ruta = "file:/home/BIT/data/weblogs/2013-09-15.log"
+
+5. Crea un RDD con el contenido del fichero llamada logs
+	
+	scala > val logs = sc.textFile(ruta)
+
+6. Crea un nuevo RDD, jpglogs, que contenga solo las líneas del RDD que contienen la
+cadena de caracteres “.jpg”. Puedes usar el método contains()
+
+	scala > val jpglogs = logs.filter(x=>x.contains(".jpg"))
+
+7. Imprime en pantalla las 5 primeras líneas de jpglogs
+	
+	scala > jpglogs.take(5)
+
+8. Es posible anidar varios métodos en la misma línea. Crea una variable jpglogs2 que
+devuelva el número de líneas que contienen la cadena de caracteres “.jpg”
+
+	scala > val jpglogs2 = logs.filter(x=>x.contains(".jpg")).count()
+
+9. Ahora vamos a comenzar a usar una de las funciones más importantes de Spark, la
+función “map()”. Para ello, coge el RDD logs y calcula la longitud de las 5 primeras
+líneas. Puedes usar la función “size()” o “length()” Recordad que la función map ejecuta
+una función sobre cada línea del RDD, no sobre el conjunto total del RDD. 
+
+	scala > logs.map(x=>x.length).take(5)
+
+10. Imprime por pantalla cada una de las palabras que contiene cada una de las 5
+primeras líneas del RDD logs. Puedes usar la función “split()”
+
+	scala > logs.map(x=>x.split(" ")).take(5)
+
+11. Mapea el contenido de logs a un RDD “logwords” de arrays de palabras de cada línea
+
+	scala > val logwords = logs.map(x=>x.split(" "))
+
+12. Crea un nuevo RDD llamado “ips” a partir del RDD logs que contenga solamente las
+ips de cada línea (primer elemento de cada fila)
+
+	scala > val ips = logs.map(linea=>linea.split(" ") (0))
+
+13. Imprime por pantalla las 5 primeras líneas de ips
+
+	scala > ips.take(5)
+
+14. Visualiza el contenido de ips con la función “collect()”. Verás que no es demasiado
+intuitivo. Prueba a usar el comando “foreach”
+	scala > ips.collect()
+
+	scala > ips.foreach(ip=>println(ip))
+
+15. Crea un bucle “for” para visualizar el contenido de las 10 primeras líenas de ips.
+
+	scala > for(linea<-ips.take(10)){println(linea)}
+
+16. Guarda el contenido de “ips” entero en un fichero de texto usando el método
+saveAsTextFile en la ruta “/home/cloudera/iplist” y observa su contenido.
+
+	scala > ips.saveAsTextFile("file:/home/cloudera/ipList")
+
+
+
+
+
+
+
+
 
 
