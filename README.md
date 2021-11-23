@@ -30,3 +30,5 @@ Ejercicios de Flume terminados, este fichero es solo testimonial de que se han h
 *EJERCICIOS SPARK*
 
 On going
+Practica de Los Simpsons dejada en Stand By (problemas de dependencias)
+

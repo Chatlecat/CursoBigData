@@ -221,25 +221,189 @@ EJERCICIOS ADICIONALES
 	scala > val cuentaPalabras = palabras.map(x => (x, 1)).reduceByKey((x, y) => x + y);
 	scala > cuentaPalabras.take(20).foreach(println) 
 
-⦁	El análisis anterior no es todo lo completo que una situación real nos puede requerir, pues entre las cpalabras más repetidas encontramos: pronombres, artículos, proposiciones...; es decir, palabras que no nos aportan información alguna. A este tipo de palabras se les conoce como ⦁	palabras vacías (StopWords), y nos interesa eliminarlas de nuestro análisis.
+4.El análisis anterior no es todo lo completo que una situación real nos puede requerir, pues entre las cpalabras más repetidas encontramos: pronombres, artículos, proposiciones...; es decir, palabras que no nos aportan información alguna. A este tipo de palabras se les conoce como palabras vacías (StopWords), y nos interesa eliminarlas de nuestro análisis.
 
-⦁	Para la realización de este ejercicio vamos a necesitar un dataset que contenga "stop words" en inglés (pues, como es lógico, los libros de Shakespeare están en este idioma). Copia el archivo "stop-word-list.csv" en la máquina virtual y cópialo al HDFS (en la ruta por defecto).
 
-⦁	También tenemos que tener en cuenta que, para hacer nuestro análisis, no nos interesan ni las líneas que solo contengan espacios en blanco ni las palabras que estén formadas por una única letra. Tampoco haremos distinción entre mayúsculas ni minúsculas, por lo que, por ejemplo, "Hello" y "hello" deberán ser tomadas como la misma palabra en el análisis.
-⦁	El método para cambiar una línea a minúsculas es: toLowerCase
-⦁	La expresión regular que toma únicamente caracteres alfabéticos es: "[^a-zA-Z]+"
-⦁	Un archivo CSV está delimitado por comas.
-⦁	No nos interesa mostrar las ocurrencias de una única letra. Por lo que deberemos filtrar el RDD final.
+5. Para la realización de este ejercicio vamos a necesitar un dataset que contenga "stop words" en inglés (pues, como es lógico, los libros de Shakespeare están en este idioma). Copia el archivo "stop-word-list.csv" en la máquina virtual y cópialo al HDFS (en la ruta por defecto).
 
-⦁	El resultado de este ejercicio debería ser parecido a:
+6. También tenemos que tener en cuenta que, para hacer nuestro análisis, no nos interesan ni las líneas que solo contengan espacios en blanco ni las palabras que estén formadas por una única letra. Tampoco haremos distinción entre mayúsculas ni minúsculas, por lo que, por ejemplo, "Hello" y "hello" deberán ser tomadas como la misma palabra en el análisis.
+	1.El método para cambiar una línea a minúsculas es: toLowerCase
+	2.La expresión regular que toma únicamente caracteres alfabéticos es: "[^a-zA-Z]+"
+	4.Un archivo CSV está delimitado por comas.
+	5.No nos interesa mostrar las ocurrencias de una única letra. Por lo que deberemos filtrar el RDD final.
 
 	
+	scala > val logShakes = sc.textFile("shakespeare/*").flatMap(x => x.split(" ")).map(y => y.replaceAll("[^a-zA-Z]*", "")).map(z => z.toLowerCase)
+	scala > val cuentaPalabras = logShakes.map(x => (x, 1))
+	scala >	val stopWords = sc.textFile("stop-word-list.csv").flatMap(x=>x.split(",")).map( y => (y.trim,1))
+	scala > val cuentaPalabras = logShakes.ap(x => (x,1))
+	scala > val cuentaPalabras2 = cuentaPalabras.subtract(stopWords)
+	scala > val cuentaPalabras3 = cuentaPalabras2.reduceByKey((x, y) => x + y)
+	scala > val cuentaPalabras4 = cuentaPalabras3.map(x => x.swap).sortByKey(false).map(y => y.swap)
+	scala > cuentaPalabras4.take(100).foreach(println)
+
+EJERCICIOS SPARKSQL (JASON)
+EL objetivo de este ejercicio es familiarizarnos con el uso de la herramienta SQL de Spark.
+
+Tareas a realizar
+
+1. Crea un nuevo contexto SQLContext
+	scala > val sqc = new org.apache.spark.sql.SQLContext(sc)
+
+2. Importa los implicits que permiten convertir RDDs en DataFrames
+	scala > import sqlContext.implicits._
+3. Carga el dataset “zips.json” que se encuentra en la carpeta de ejercicios de Spark y que contiene datos de códigos postales de Estados Unidos. Puedes usar el comando “ssc.load(“ruta_fichero”, “formato”)”. Tiene este aspecto:
+
+	scala > val zips = sqc.load("file:/ruta/a/zips.jason", "json")
+
+4. Visualiza los datos con el comando “show()”. Tienes que ver una tabla con 5 columnas con un subconjunto de los datos del fichero. Puedes ver que el código postal es “_id”, la ciudad es “city”, la ubicación “loc”, la población “pop” y el estado “state”.
+
+	scala > zips.show
+
+5. Obtén las filas cuyos códigos postales cuya población es superior a 10000 usando el api de DataFrames
+
+	scala > zips.filter("pop > 10000").show
+
+6. Guarda esta tabla en un fichero temporal para poder ejecutar SQL contra ella.
+
+	scala > zips.registerTempTable("zips")
+
+7. Realiza la misma consulta que en el punto 5, pero esta vez usando SQL
+	
+	scala > sqc.sql("SELECT * FROM zips WHERE pop > 10000").show
+
+8. Usando SQL, obtén la ciudad con más de 100 códigos postales
+	
+	scala > sqc.sql("SELECT city FROM zips GROUP BY city HAVING COUNT(*) > 100").show
+
+9. Usando SQL, obtén la población del estado de Wisconsin (WI)
+
+	scala > sqc.sql("SELECT SUM(pop) AS population FROM zips WHERE state LIKE \"WI\" ").show
+
+10. Usando SQL, obtén los 5 estados más poblados
+
+	scala > sqc.sql("SELECT state, SUM(pop) AS population FROM zips GROUP BY state ORDER BY population DESC LIMIT 5").show
 
 
+SPARKSQL(HIVE)
+El objetivo de este ejercicio es familiarizarnos con el uso de SparkSQL para acceder a tablas en Hive, dado que es una herramienta ampliamente extendida en entornos analíticos.
+
+Tareas a realizar
+
+1. Abrir una terminal y ejecutad este comando: “sudo cp /usr/lib/hive/conf/hive-site.xml /usr/lib/spark/conf/”. Para más información podéis consultar esta web “ https://community.cloudera.com/t5/Advanced-Analytics-Apache-Spark/how-to-access-the-hive-tables-from-spark-shell/td-p/36609"
+
+2. Reiniciar el shell de spark.
+
+3. En un terminal arrancar el Shell de Hive y echar un vistazo a las bases de datos y tablas de cada una de ellas
+
+4. En otro terminal aparte, arrancar el Shell de Spark, y a través de SparkSQL crear una base de datos y una tabla con dos o tres columnas. Si no creamocon Spark a través de Hive.
+bbdd: hivespark
+tabla: empleados
+columnas: id INT, name STRING, age INT
+config table: FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n'
+
+	scala > import org.apache.spark.sql.hive.HiveContext
+	scala > val sqc = new HiveContext(sc) //IMPORTANTE HiveContext
+	scala > sqc.sql("CREATE DATABASE IF NOT EXISTS hivespark")
+	scala > sqc.sql("CREATE TABLE IF NOT EXISTS cursohivedb.empleados (id INT,name STRING, age INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n'")
+
+5. Crear un fichero “/home/cloudera/empleado.txt” que contenga los siguientes datos de esta manera dispuestos
+
+6. Aprovechando la estructura de la tabla que hemos creado antes, usando SparkSQL, subid los datos del fichero “/home/cloudera/empleado.txt” a la tabla hive, usando como la sintaxis de HiveQL como vimos en el curso de Hive (LOAD DATA LOCAL INPATH).
+
+	scala > sqc.sql("LOAD DATA LOCAL INPATH '/home/cloudera/empleados.txt' INTO TABLE hivespark.empleados")
+
+7. Ejecutad cualquier consulta en los terminales de Hive y Spark para comprobar que todo funciona y se devuelven los mismos datos. En el terminal de Spark usad el comando “show()” para mostrar los datos.
+
+	scala > sqc.sql(SELECT * FROM hivespark.empleados").show
 
 
+SPARKSQL(DataFrames)
+
+El objetivo de este ejercicio es familiarizarnos un poco más con la API de DataFrames.
+
+1. Creamos un contexto SQL
+
+	scala > val sqc = new org.apache.spark.sql.SQLContext(sc)
+
+2. Importa los implicits que permiten convertir RDDs en DataFrames y Rows
+
+	scala > import sqlContext.implicits._
+	scala > import org.apache.spark.sql.Row
+	scala > import org.apache.spark.sql.types.StructType
+	scala > import org.apache.spark.sql.types.StructField
+	scala > import org.apache.spark.sql.types.StringType
+
+3. Creamos una variable con la ruta al fichero “/home/cloudera/Desktop/DataSetPartidos.txt”. Será necesario copiar el dataset “DataSetPartidos.txt” al escritorio de la máquina virtual.
+	scala > val ruta = "file:/home/cloudera/Shared_Folder/data_spark/DataSetPartidos.txt"
+
+4. Leemos el contenido del archivo en una variable
+
+	scala >	val datosPartido = sc.textFile(ruta)
+
+5. Creamos una variable que contenga el esquema de los datos
+
+	scala > val schema = "id::temporada::jornada::EquipoLocal::EquipoVisitante::golesLocal::golesVisitante::fecha::timestamp"
 
 
+6. Generamos el esquema basado en la variable que contiene el esquema de los datos que acabamos de crear
+
+	scala > val schematic = StructType(schema.split("::").map(fieldName => StructField(fieldName, StringType, true)))
+
+7. Convertimos las filas de nuestro RDD a Rows
+
+	scala > val RowRDD = datosPartido.map(_.split("::")).map(p=>Row(p(0),p(1),p(2),p(3), p(4), p(5), p(6), p(7), p(8).trim))
+
+8. Aplica el schema al RDD
+
+	scala > val partidosDF = ssqc.createDataFrame(RowRDD, schematic)
+
+9. Registramos el DataFrame como una Tabla
+
+	scala > partidosDF.registerTempTable("partidos")
+
+10. Ya estamos listos para hacer consultas sobre el DF con el siguiente formato
+
+	scala > sqc.sql("SELECT COUNT(*) AS partidos_ganados_real_madrid FROM partidos WHERE (EquipoVisitante LIKE 'Real Madrid' AND golesVisitante > golesLocal) OR (EquipoLocal Like 'Real Madrid' AND golesLocal > golesVisitante)").show
+
+	//Partidos ganados por el Real Madrid
+
+11. los resulados de las queries son DF y soportan las operaciones como los RDDs normales. Las columnas en el Row de resultados son accesibles por índice o nombre de campo
+
+	scala > val result = sqc.sql("SELECT COUNT(*) AS partidos_ganados_real_madrid FROM partidos WHERE (EquipoVisitante LIKE 'Real Madrid' AND golesVisitante > golesLocal) OR (EquipoLocal Like 'Real Madrid' AND golesLocal > golesVisitante)")
+	scala > result.map(t => "Partidos ganados por el Real Madrid: " + t(0)).collect().foreach(println)
+
+12. Ejercicio: ¿Cuál es el record de goles como visitante en una temporada del Oviedo?
+
+	scala > sqc.sql("SELECT SUM(golesVisitante) FROM partidos WHERE EquipoVisitante LIKE '%Oviedo%' GROUP BY temporada ORDER BY SUM(golesVisitante) DESC").show
+
+13. ¿Quién ha estado más temporadas en 1 Division Sporting u Oviedo?
+
+	scala > sqc.sql("SELECT COUNT(DISTINCT(temporada)) FROM partidos WHERE EquipoLocal='Real Oviedo' OR EquipoVisitante='Real Oviedo'").show 
+
+	scala > sqc.sql("SELECT COUNT(DISTINCT(temporada)) FROM partidos WHERE EquipoLocal='Sporting de Gijon' OR EquipoVisitante='Sporting de Gijon'").show 
+
+	Sporting tiene mas temporadas en 1ra division :)
+
+EJERCICIOS OPCIONALES SPARKSQL (Los Simpsons, sí, la serie animada) //TERMINAR MAS TARDE//
+
+1. Toma el dataset 'simpsons_episodes.csv' proporcionado por el profesor. Cópialo a la máquina virtual arrastrando y soltando el archivo.
+
+2. Utilizando la terminal, introduce dicho dataset en el HDFS (La ruta por defecto del HDFS es: hdfs://quickstart.cloudera:8020/user/cloudera, copia el dataset en dicha ruta.)
+
+	$ hadoop fs -put /home/cloudera/Escritorio/simpsons.csv user/cloudera
+
+3. El dataset que tenemos es estructurado, es decir, sus columnas tienen título (como en una base de datos). Invierte un rato en familiarizarte con el dataset y sus respectivos campos.
+
+id,title,original_air_date,production_code,season,number_in_season,number_in_series, us_viewers_in_million,views,imdb_rating,imdb_votes,image_url,video_url
+
+
+4. El objetivo de este ejercicio es conseguir un diagrama lineal en el que podamos apreciar, gráficamente, la puntuación media de los capítulos de los Simpsons durante todas sus temporadas. Este ejercicio constituye un posible caso real en el que podremos obtener información y realizar conclusiones mediante el análisis de multitud de datos.
+
+
+5. Para cargar archivos ‘csv’ en Spark necesitamos utilizar esta librería, mientras que para crear el diagrama lineal a partir de los datos que obtengamos necesitamos esta otra. Para ejecutar Spark desde la terminal e indicarle las librería que queremos utilizar deberemos ejecutar el comando (IMPORTANTE EJECUTARLO SIN ESPACIOS):
+
+	scala > 
 
 
 
