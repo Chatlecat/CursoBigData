@@ -28,4 +28,4 @@ Ejercicios de Flume terminados, este fichero es solo testimonial de que se han h
 
 *EJERCICIOS SPARK*
 
-On going. MIRAR BRANCH SPARK
+Ejercicios de Spark terminados // Ejercicio de los simpsons error
