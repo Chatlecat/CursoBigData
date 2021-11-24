@@ -28,5 +28,3 @@ Ejercicios de Flume terminados, este fichero es solo testimonial de que se han h
 
 *EJERCICIOS SPARK*
 
-EJERCICIOS SPARK TERMINADOS //
-El ejercicio de los simpsons falló
