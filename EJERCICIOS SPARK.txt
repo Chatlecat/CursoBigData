@@ -405,5 +405,46 @@ id,title,original_air_date,production_code,season,number_in_season,number_in_ser
 
 	scala > 
 
+EJERCICIOS SPARK STREAMING
+
+EJEMPLO 1
+1. Visita en la web la documentación de Spark https://spark.apache.org/docs/1.5.2/streaming-programming-guide.html y familiarízate con el ejercicio. El objetivo es hacer lo mismo que pone en la web en el apartado “A Quick Example”
+
+2. Tomate un tiempo para navegar por la web y explorar todo lo que puede ofrecerte. Cuando lo consideres, comienza el ejercicio:
+
+3. Abre un terminal nuevo y escribe el siguiente comando: “nc -lkv 4444”, que hace que todo lo que escribas se envíe al puerto 4444
+
+4. Inicia un nuevo terminal y arranca el Shell de Spark en modo local con al menos 2 threads, necesarios para ejecutar este ejercicio: “spark-shell --master local[2]”
+
+5. Por otro lado, accede al fichero “/usr/lib/spark/conf/log4j.properties”, y edítalo para poner el nivel de log a ERROR, de modo que en tu Shell puedas ver con claridad el streaming de palabras contadas devuelto por tu script.
+
+6. Importa las clases necesarias para trabajar con Spark Streaming
+	scala > import org.apache.spark.streaming.StreamingContext
+	scala > import org.apache.spark.streaming.StreamingContext._
+	scala > import org.apache.spark.streaming.Seconds
+
+7. Crea un SparkContext con una duración de 5 segundos
+
+	scala > val sds = new StreamingContext(sc, Seconds(5))
+	
+
+8. Crea un DStream para leer texto del puerto que pusiste en el comando “nc”, especificando el hostname de nuestra máquina, que es “quickstart.cloudera”
+
+	scala > val stream = sds.socketTextStream("quickstart.cloudera", 4444)
+
+9. Crea un MapReduce, como vimos en los apuntes, para contar el número de palabras que aparecen en cada Stream
+
+	scala > val words = stream.flatMap(x => x.split(" "))
+	scala > val countWords = words.map(x=> (x, 1)).reduceByKey((x, y) => x + y)
+	scala > countWords.print()
+
+10. Arranca el Streaming Context y llama a awaitTermination para esperar a que la tarea termine
+
+	scala > sds.start(); sds.awaitTermination()
+
+
+
+
+
 
 
