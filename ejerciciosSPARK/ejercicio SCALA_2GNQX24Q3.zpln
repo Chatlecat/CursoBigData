@@ -1,0 +1,617 @@
+﻿{
+  "paragraphs": [
+    {
+      "text": "",
+      "user": "anonymous",
+      "dateUpdated": "2021-12-02T14:54:34+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala",
+        "tableHide": true,
+        "editorHide": true,
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1638186370261_312226665",
+      "id": "paragraph_1638186370261_312226665",
+      "dateCreated": "2021-11-29T11:46:10+0000",
+      "dateStarted": "2021-12-01T10:21:36+0000",
+      "dateFinished": "2021-12-01T10:22:04+0000",
+      "status": "FINISHED",
+      "focus": true,
+      "$$hashKey": "object:210",
+      "title": "EJERCICIOS DE SPARK LIBRO Y JOSE (CAPITULO 3)"
+    },
+    {
+      "text": "import org.apache.spark.sql.SparkSession\r\nimport org.apache.spark.sql.types._\r\n\r\n val spark = SparkSession\r\n .builder\r\n .appName(\"Example-3_7\")\r\n .getOrCreate()\r\n\r\n // Get the path to the JSON file\r\n val jsonFile = \"gs://ejercicios-bigdata1/notebooks/zeppelin/repo/blogs.json\"\r\n\r\n \r\n // Define our schema programmatically\r\n val schema = StructType(Array(StructField(\"Id\", IntegerType, false),\r\n StructField(\"First\", StringType, false),\r\n StructField(\"Last\", StringType, false),\r\n StructField(\"Url\", StringType, false),\r\n StructField(\"Published\", StringType, false),\r\n StructField(\"Hits\", IntegerType, false),\r\n StructField(\"Campaigns\", ArrayType(StringType), false)))\r\n // Create a DataFrame by reading from the JSON file \r\n // with a predefined schema\r\n val blogsDF = spark.read.schema(schema).json(jsonFile)\r\n\r\n // Show the DataFrame schema as output\r\n blogsDF.show(false)\r\n\r\n // Print the schema\r\n println(blogsDF.printSchema)\r\n println(blogsDF.schema)\r\n\r\n",
+      "user": "anonymous",
+      "dateUpdated": "2021-12-01T11:26:10+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala",
+        "tableHide": false
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "+---+---------+-------+-----------------+---------+-----+----------------------------+\n|Id |First    |Last   |Url              |Published|Hits |Campaigns                   |\n+---+---------+-------+-----------------+---------+-----+----------------------------+\n|1  |Jules    |Damji  |https://tinyurl.1|1/4/2016 |4535 |[twitter, LinkedIn]         |\n|2  |Brooke   |Wenig  |https://tinyurl.2|5/5/2018 |8908 |[twitter, LinkedIn]         |\n|3  |Denny    |Lee    |https://tinyurl.3|6/7/2019 |7659 |[web, twitter, FB, LinkedIn]|\n|4  |Tathagata|Das    |https://tinyurl.4|5/12/2018|10568|[twitter, FB]               |\n|5  |Matei    |Zaharia|https://tinyurl.5|5/14/2014|40578|[web, twitter, FB, LinkedIn]|\n|6  |Reynold  |Xin    |https://tinyurl.6|3/2/2015 |25568|[twitter, LinkedIn]         |\n+---+---------+-------+-----------------+---------+-----+----------------------------+\n\nroot\n |-- Id: integer (nullable = true)\n |-- First: string (nullable = true)\n |-- Last: string (nullable = true)\n |-- Url: string (nullable = true)\n |-- Published: string (nullable = true)\n |-- Hits: integer (nullable = true)\n |-- Campaigns: array (nullable = true)\n |    |-- element: string (containsNull = true)\n\n()\nStructType(StructField(Id,IntegerType,true), StructField(First,StringType,true), StructField(Last,StringType,true), StructField(Url,StringType,true), StructField(Published,StringType,true), StructField(Hits,IntegerType,true), StructField(Campaigns,ArrayType(StringType,true),true))\nimport org.apache.spark.sql.SparkSession\nimport org.apache.spark.sql.types._\n\u001b[1m\u001b[34mspark\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.SparkSession\u001b[0m = org.apache.spark.sql.SparkSession@5fef74f7\n\u001b[1m\u001b[34mjsonFile\u001b[0m: \u001b[1m\u001b[32mString\u001b[0m = gs://ejercicios-bigdata1/notebooks/zeppelin/repo/blogs.json\n\u001b[1m\u001b[34mschema\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.types.StructType\u001b[0m = StructType(StructField(Id,IntegerType,false), StructField(First,StringType,false), StructField(Last,StringType,false), StructField(Url,StringType,false), StructField(Published,StringType,false), StructField(Hits,IntegerType,false), StructField(Campaigns,ArrayType(StringType,true),false))\n\u001b[1m\u001b[34mblogsDF\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.DataFrame\u001b[0m = [Id: int, First: string ... 5 more fields]\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://cluster-c548-m.us-central1-b.c.handy-flame-333610.internal:40935/jobs/job?id=0",
+              "$$hashKey": "object:652"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1638186382986_289334587",
+      "id": "paragraph_1638186382986_289334587",
+      "dateCreated": "2021-11-29T11:46:22+0000",
+      "dateStarted": "2021-12-01T10:21:44+0000",
+      "dateFinished": "2021-12-01T10:22:12+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:211"
+    },
+    {
+      "text": "blogsDF.take(20).foreach(println) //jjj",
+      "user": "anonymous",
+      "dateUpdated": "2021-11-29T12:52:28+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12,
+        "fontSize": 12,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala",
+        "tableHide": false
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "[1,Jules,Damji,https://tinyurl.1,1/4/2016,4535,WrappedArray(twitter, LinkedIn)]\n[2,Brooke,Wenig,https://tinyurl.2,5/5/2018,8908,WrappedArray(twitter, LinkedIn)]\n[3,Denny,Lee,https://tinyurl.3,6/7/2019,7659,WrappedArray(web, twitter, FB, LinkedIn)]\n[4,Tathagata,Das,https://tinyurl.4,5/12/2018,10568,WrappedArray(twitter, FB)]\n[5,Matei,Zaharia,https://tinyurl.5,5/14/2014,40578,WrappedArray(web, twitter, FB, LinkedIn)]\n[6,Reynold,Xin,https://tinyurl.6,3/2/2015,25568,WrappedArray(twitter, LinkedIn)]\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://cluster-99c4-m.europe-west2-a.c.handy-flame-333610.internal:35199/jobs/job?id=1",
+              "$$hashKey": "object:698"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1638187019800_546198130",
+      "id": "paragraph_1638187019800_546198130",
+      "dateCreated": "2021-11-29T11:56:59+0000",
+      "dateStarted": "2021-11-29T12:52:23+0000",
+      "dateFinished": "2021-11-29T12:52:24+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:212"
+    },
+    {
+      "title": "Prueba de Select, expresiones",
+      "text": " blogsDF.select(expr(\"Hits * 2\")).show(2)\n blogsDF.select(col(\"Hits\") * 2).show(2)",
+      "user": "anonymous",
+      "dateUpdated": "2021-11-29T12:53:07+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala",
+        "lineNumbers": true,
+        "title": true,
+        "tableHide": false
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "+----------+\n|(Hits * 2)|\n+----------+\n|      9070|\n|     17816|\n+----------+\nonly showing top 2 rows\n\n+----------+\n|(Hits * 2)|\n+----------+\n|      9070|\n|     17816|\n+----------+\nonly showing top 2 rows\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://cluster-99c4-m.europe-west2-a.c.handy-flame-333610.internal:35199/jobs/job?id=2",
+              "$$hashKey": "object:744"
+            },
+            {
+              "jobUrl": "http://cluster-99c4-m.europe-west2-a.c.handy-flame-333610.internal:35199/jobs/job?id=3",
+              "$$hashKey": "object:745"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1638188298134_1708215806",
+      "id": "paragraph_1638188298134_1708215806",
+      "dateCreated": "2021-11-29T12:18:18+0000",
+      "dateStarted": "2021-11-29T12:52:57+0000",
+      "dateFinished": "2021-11-29T12:52:59+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:213"
+    },
+    {
+      "title": "Bigger Hitters",
+      "text": "blogsDF.withColumn(\"Big Hitters\", (expr(\"Hits > 10000\"))).show()\n",
+      "user": "anonymous",
+      "dateUpdated": "2021-11-30T12:14:09+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true,
+        "tableHide": false
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "+---+---------+-------+-----------------+---------+-----+--------------------+-----------+\n| Id|    First|   Last|              Url|Published| Hits|           Campaigns|Big Hitters|\n+---+---------+-------+-----------------+---------+-----+--------------------+-----------+\n|  1|    Jules|  Damji|https://tinyurl.1| 1/4/2016| 4535| [twitter, LinkedIn]|      false|\n|  2|   Brooke|  Wenig|https://tinyurl.2| 5/5/2018| 8908| [twitter, LinkedIn]|      false|\n|  3|    Denny|    Lee|https://tinyurl.3| 6/7/2019| 7659|[web, twitter, FB...|      false|\n|  4|Tathagata|    Das|https://tinyurl.4|5/12/2018|10568|       [twitter, FB]|       true|\n|  5|    Matei|Zaharia|https://tinyurl.5|5/14/2014|40578|[web, twitter, FB...|       true|\n|  6|  Reynold|    Xin|https://tinyurl.6| 3/2/2015|25568| [twitter, LinkedIn]|       true|\n+---+---------+-------+-----------------+---------+-----+--------------------+-----------+\n\n== Parsed Logical Plan ==\nRelation[Id#0,First#1,Last#2,Url#3,Published#4,Hits#5,Campaigns#6] json\n\n== Analyzed Logical Plan ==\nId: int, First: string, Last: string, Url: string, Published: string, Hits: int, Campaigns: array<string>\nRelation[Id#0,First#1,Last#2,Url#3,Published#4,Hits#5,Campaigns#6] json\n\n== Optimized Logical Plan ==\nRelation[Id#0,First#1,Last#2,Url#3,Published#4,Hits#5,Campaigns#6] json\n\n== Physical Plan ==\n*(1) FileScan json [Id#0,First#1,Last#2,Url#3,Published#4,Hits#5,Campaigns#6] Batched: false, Format: JSON, Location: InMemoryFileIndex[gs://ejercicios-bigdata1/notebooks/zeppelin/repo/blogs.json], PartitionFilters: [], PushedFilters: [], ReadSchema: struct<Id:int,First:string,Last:string,Url:string,Published:string,Hits:int,Campaigns:array<string>>\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://cluster-99c4-m.europe-west2-a.c.handy-flame-333610.internal:35199/jobs/job?id=46",
+              "$$hashKey": "object:795"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1638188559565_462208768",
+      "id": "paragraph_1638188559565_462208768",
+      "dateCreated": "2021-11-29T12:22:39+0000",
+      "dateStarted": "2021-11-30T12:13:50+0000",
+      "dateFinished": "2021-11-30T12:13:51+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:214"
+    },
+    {
+      "title": "b. Leer el CSV del ejemplo del cap2 y obtener la estructura del schema dado por  defecto.",
+      "text": "\nimport org.apache.spark.sql.SparkSession\nimport org.apache.spark.sql.types._\n\n // Get the path to the CSV file\n val csvFile = \"gs://ejercicios-bigdata1/notebooks/zeppelin/repo/sf-fire-calls.csv\"\n \n val df_fire_calls = spark.read.options(Map(\"header\"->\"true\", \"inferSchema\"->\"true\",\"samplingRatio\"->\"0.001\")).csv(csvFile)\n\n df_fire_calls.schema.foreach(println)\n",
+      "user": "anonymous",
+      "dateUpdated": "2021-12-02T14:43:09+0000",
+      "progress": 50,
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true,
+        "tableHide": false
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "StructField(CallNumber,IntegerType,true)\nStructField(UnitID,StringType,true)\nStructField(IncidentNumber,IntegerType,true)\nStructField(CallType,StringType,true)\nStructField(CallDate,StringType,true)\nStructField(WatchDate,StringType,true)\nStructField(CallFinalDisposition,StringType,true)\nStructField(AvailableDtTm,StringType,true)\nStructField(Address,StringType,true)\nStructField(City,StringType,true)\nStructField(Zipcode,IntegerType,true)\nStructField(Battalion,StringType,true)\nStructField(StationArea,IntegerType,true)\nStructField(Box,IntegerType,true)\nStructField(OriginalPriority,StringType,true)\nStructField(Priority,StringType,true)\nStructField(FinalPriority,IntegerType,true)\nStructField(ALSUnit,BooleanType,true)\nStructField(CallTypeGroup,StringType,true)\nStructField(NumAlarms,IntegerType,true)\nStructField(UnitType,StringType,true)\nStructField(UnitSequenceInCallDispatch,IntegerType,true)\nStructField(FirePreventionDistrict,StringType,true)\nStructField(SupervisorDistrict,IntegerType,true)\nStructField(Neighborhood,StringType,true)\nStructField(Location,StringType,true)\nStructField(RowID,StringType,true)\nStructField(Delay,DoubleType,true)\nimport org.apache.spark.sql.SparkSession\nimport org.apache.spark.sql.types._\n\u001b[1m\u001b[34mcsvFile\u001b[0m: \u001b[1m\u001b[32mString\u001b[0m = gs://ejercicios-bigdata1/notebooks/zeppelin/repo/sf-fire-calls.csv\n\u001b[1m\u001b[34mdf_fire_calls\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.DataFrame\u001b[0m = [CallNumber: int, UnitID: string ... 26 more fields]\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://cluster-c548-m.us-central1-b.c.handy-flame-333610.internal:37667/jobs/job?id=0",
+              "$$hashKey": "object:1402"
+            },
+            {
+              "jobUrl": "http://cluster-c548-m.us-central1-b.c.handy-flame-333610.internal:37667/jobs/job?id=1",
+              "$$hashKey": "object:1403"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1638190288249_176621647",
+      "id": "paragraph_1638190288249_176621647",
+      "dateCreated": "2021-11-29T12:51:28+0000",
+      "dateStarted": "2021-12-02T14:43:09+0000",
+      "dateFinished": "2021-12-02T14:43:49+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:215"
+    },
+    {
+      "title": "a. Ejercicios libro Learning Spark (Capítulo 3: sf-fire-calls)",
+      "text": "// - What were all the different types of fire calls in 2018?\ndf_fire_calls.cache()\nval diff_types_of_calls = df_fire_calls.select(\"CallType\").distinct()\n//diff_types_of_calls.show(truncate=false)\n\n// - What months within the year 2018 saw the highest number of fire calls?\nval only_dates = df_fire_calls.select(to_date(col(\"CallDate\"), \"MM/dd/yyyy\").as(\"date\")) // Primero hacemos un DataFrame donde convertimos la fechas a algo entendible por SQL\nonly_dates.createOrReplaceTempView(\"firecalls\")\nval months_with_most_calls = spark.sql(\"SELECT MONTH(date) AS Month, COUNT(*) AS count FROM firecalls WHERE YEAR(date) LIKE 2018 GROUP BY MONTH ORDER BY COUNT(*) DESC\")\n\nval months_with_most_calls2 = only_dates.filter(year($\"date\") === 2018).groupBy(month($\"date\").as(\"Month\")).count().as(\"count\").orderBy(desc(\"count\"))\n//months_with_most_calls2.show(truncate=false)\n//months_with_most_calls.show(truncate=false)\n\n// - Which neighborhood in San Francisco generated the most fire calls in 2018?\n\nval callDate_neighborhoods_delay = df_fire_calls.select(to_date(col(\"CallDate\"), \"MM/dd/yyyy\").as(\"date\"), $\"Neighborhood\", $\"Delay\")\n\ncallDate_neighborhoods_delay.createOrReplaceTempView(\"total_firecalls\")\n\nval most_fire_neighborhoods = callDate_neighborhoods_delay\n                                            .select($\"Neighborhood\")\n                                            .filter(year($\"date\") === 2018)\n                                            .groupBy($\"Neighborhood\")\n                                            .count().as(\"count\")\n                                            .orderBy(desc(\"count\"))\n//most_fire_neighborhoods.show(3, truncate=false)\n\nval most_fire_neighborhoods_sql = spark.sql(\"SELECT Neighborhood, COUNT(*) FROM total_firecalls WHERE YEAR(date) LIKE 2018 GROUP BY Neighborhood ORDER BY COUNT(*) DESC\")\n//most_fire_neighborhoods_sql.show(3, truncate=false)\n\n\n// - Which neighborhoods had the worst response times to fire calls in 2018?\n\nval most_delay_neighborhoods = callDate_neighborhoods_delay\n                                .where(year($\"date\") === 2018)\n                                .groupBy($\"Neighborhood\")\n                                .agg(avg($\"Delay\").as(\"promedio\"))\n                                .orderBy(desc(\"promedio\"))\n                                \n//most_delay_neighborhoods.show(3)\n\nval most_delay_neighborhoods_sql = spark.sql(\"SELECT Neighborhood, AVG(Delay) AS promedio FROM total_firecalls WHERE YEAR(date) LIKE 2018 GROUP BY Neighborhood ORDER BY AVG(Delay) DESC\")\n//most_delay_neighborhoods_sql.show(3, truncate=false)\n\n// - Which week in the year in 2018 had the most fire calls?\nval most_fires_a_week = callDate_neighborhoods_delay.select(weekofyear($\"date\").as(\"semana\")).where(year($\"date\") === 2018).groupBy(\"semana\").count().as(\"count\").orderBy(desc(\"count\"))\n//most_fires_a_week.show(3, truncate = false)\n\nval most_fires_a_week_sql = spark.sql(\"SELECT WEEKOFYEAR(date) as Semana, COUNT(*) as Count FROM total_firecalls WHERE YEAR(date) LIKE 2018 GROUP BY Semana ORDER BY Count DESC\")\n//most_fires_a_week_sql.show(3, truncate = false)\n\n// - Is there a correlation between neighborhood, zip code, and number of fire calls?\n\n\nval firecalls_for_corr = df_fire_calls.select($\"Neighborhood\", $\"ZipCode\")\nfirecalls_for_corr.createOrReplaceTempView(\"firecalls_for_corr\")\nval dataFromCorr_sql = spark.sql(\"SELECT Neighborhood, ZipCode, COUNT(*) as Count FROM firecalls_for_corr GROUP BY Neighborhood, ZipCode ORDER BY ZipCode DESC\")\ndataFromCorr_sql.show(truncate=false)\n\n// - How can we use Parquet files or SQL tables to store this data and read it back?\n\n\n\n",
+      "user": "anonymous",
+      "dateUpdated": "2021-12-02T14:53:59+0000",
+      "progress": 0,
+      "config": {
+        "editorSetting": {
+          "completionKey": "TAB",
+          "editOnDblClick": false,
+          "completionSupport": true,
+          "language": "scala"
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/scala",
+        "fontSize": 9,
+        "title": true,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "StructField(date,DateType,true)\nStructField(Neighborhood,StringType,true)\nStructField(Delay,DoubleType,true)\n+--------------------------+-------+-----+\n|Neighborhood              |ZipCode|Count|\n+--------------------------+-------+-----+\n|None                      |94158  |11   |\n|Potrero Hill              |94158  |38   |\n|Mission Bay               |94158  |833  |\n|None                      |94134  |29   |\n|Excelsior                 |94134  |405  |\n|McLaren Park              |94134  |171  |\n|Portola                   |94134  |1681 |\n|Visitacion Valley         |94134  |2436 |\n|Bayview Hunters Point     |94134  |287  |\n|North Beach               |94133  |3706 |\n|Chinatown                 |94133  |1861 |\n|Nob Hill                  |94133  |236  |\n|Russian Hill              |94133  |443  |\n|Oceanview/Merced/Ingleside|94132  |846  |\n|Sunset/Parkside           |94132  |555  |\n|Lakeshore                 |94132  |2658 |\n|West of Twin Peaks        |94132  |262  |\n|West of Twin Peaks        |94131  |371  |\n|Glen Park                 |94131  |819  |\n|Noe Valley                |94131  |763  |\n+--------------------------+-------+-----+\nonly showing top 20 rows\n\n\u001b[1m\u001b[34mdiff_types_of_calls\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.Dataset[org.apache.spark.sql.Row]\u001b[0m = [CallType: string]\n\u001b[1m\u001b[34monly_dates\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.DataFrame\u001b[0m = [date: date]\n\u001b[1m\u001b[34mmonths_with_most_calls\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.DataFrame\u001b[0m = [Month: int, count: bigint]\n\u001b[1m\u001b[34mmonths_with_most_calls2\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.Dataset[org.apache.spark.sql.Row]\u001b[0m = [Month: int, count: bigint]\n\u001b[1m\u001b[34mcallDate_neighborhoods_delay\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.DataFrame\u001b[0m = [date: date, Neighborhood: string ... 1 more field]\n\u001b[1m\u001b[34mmost_fire_neighborhoods\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.Dataset[org.apache.spark.sql.Row]\u001b[0m = [Neighborhood: string, count: bigint]\n\u001b[1m\u001b[34mmost_fire_neighborhoods_sql\u001b[0m: \u001b[1m\u001b[32morg.a...\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://cluster-c548-m.us-central1-b.c.handy-flame-333610.internal:37667/jobs/job?id=23",
+              "$$hashKey": "object:2823"
+            },
+            {
+              "jobUrl": "http://cluster-c548-m.us-central1-b.c.handy-flame-333610.internal:37667/jobs/job?id=24",
+              "$$hashKey": "object:2824"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1638359025330_1889231880",
+      "id": "paragraph_1638359025330_1889231880",
+      "dateCreated": "2021-12-01T11:43:45+0000",
+      "dateStarted": "2021-12-02T14:47:38+0000",
+      "dateFinished": "2021-12-02T14:47:40+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:216"
+    },
+    {
+      "title": "c. Cuando se define un schema al definir un campo por ejemplo StructField('Delay',  FloatType(), True) ¿qué significa el último parámetro Boolean?",
+      "text": "//Significa elementNullable = true, quiere decir que ese elemento puede tomar un valor nulo",
+      "user": "anonymous",
+      "dateUpdated": "2021-11-30T08:21:59+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1638260435185_1366466188",
+      "id": "paragraph_1638260435185_1366466188",
+      "dateCreated": "2021-11-30T08:20:35+0000",
+      "status": "READY",
+      "$$hashKey": "object:217"
+    },
+    {
+      "title": "d. Dataset vs DataFrame (Scala). ¿En qué se diferencian a nivel de código?",
+      "text": "//Dataset: es un conjunto de datos tipados \n//mientras que DataFrame es un conjunto de Datasets sin tipar\n//Para definir un Dataset, al ser un conjunto de datos enorme, inferir el schema puede llegar a ser costoso\n//por ello se utiliza \"case class\" para definir una clase con todos los tipos de cada columna del dataset",
+      "user": "anonymous",
+      "dateUpdated": "2021-12-01T11:30:35+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1638190864214_139725574",
+      "id": "paragraph_1638190864214_139725574",
+      "dateCreated": "2021-11-29T13:01:04+0000",
+      "status": "READY",
+      "$$hashKey": "object:218"
+    },
+    {
+      "title": "e. Utilizando el mismo ejemplo utilizado en el capítulo para guardar en parquet y  guardar los datos en los formatos:",
+      "text": "import org.apache.avro\n//JSON\nval jsonFolder = \"gs://ejercicios-bigdata1/notebooks/zeppelin/repo/sf-fire-calls_json\"\nval jsonFile = \"gs://ejercicios-bigdata1/notebooks/zeppelin/repo/sf-fire-calls.json\"\nprint(df_fire_calls.rdd.partitions.size+ \"\\n\")\ndf_fire_calls.coalesce(1).write.mode(\"overwrite\").json(jsonFile)\n\n//CSV (con distinto número)\nval csvFolder = \"gs://ejercicios-bigdata1/notebooks/zeppelin/repo/sf-fire-calls-copy_csv\"\nval csvFile = \"gs://ejercicios-bigdata1/notebooks/zeppelin/repo/sf-fire-calls-copy.csv\"\n\ndf_fire_calls.coalesce(1)\n   .write.format(\"com.databricks.spark.csv\").mode(\"overwrite\")\n   .option(\"header\", \"true\")\n   .save(csvFolder)\n   \n//AVRO\n//val avroFolder = \"gs://ejercicios-bigdata1/notebooks/zeppelin/repo/sf-fire-calls_avro\"\n//val avroFile = \"gs://ejercicios-bigdata1/notebooks/zeppelin/repo/sf-fire-calls.avro\"\n//df_fire_calls.write.mode(\"overwrite\")\n//df_fire_calls.write.format(\"avro\").save(avroFolder)",
+      "user": "anonymous",
+      "dateUpdated": "2021-11-30T12:50:07+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "2\n== Parsed Logical Plan ==\nRelation[CallNumber#646,UnitID#647,IncidentNumber#648,CallType#649,CallDate#650,WatchDate#651,CallFinalDisposition#652,AvailableDtTm#653,Address#654,City#655,Zipcode#656,Battalion#657,StationArea#658,Box#659,OriginalPriority#660,Priority#661,FinalPriority#662,ALSUnit#663,CallTypeGroup#664,NumAlarms#665,UnitType#666,UnitSequenceInCallDispatch#667,FirePreventionDistrict#668,SupervisorDistrict#669,... 4 more fields] csv\n\n== Analyzed Logical Plan ==\nCallNumber: int, UnitID: string, IncidentNumber: int, CallType: string, CallDate: string, WatchDate: string, CallFinalDisposition: string, AvailableDtTm: string, Address: string, City: string, Zipcode: int, Battalion: string, StationArea: int, Box: int, OriginalPriority: string, Priority: string, FinalPriority: int, ALSUnit: boolean, CallTypeGroup: string, NumAlarms: int, UnitType: string, UnitSequenceInCallDispatch: int, FirePreventionDistrict: string, SupervisorDistrict: int, ... 4 more fields\nRelation[CallNumber#646,UnitID#647,IncidentNumber#648,CallType#649,CallDate#650,WatchDate#651,CallFinalDisposition#652,AvailableDtTm#653,Address#654,City#655,Zipcode#656,Battalion#657,StationArea#658,Box#659,OriginalPriority#660,Priority#661,FinalPriority#662,ALSUnit#663,CallTypeGroup#664,NumAlarms#665,UnitType#666,UnitSequenceInCallDispatch#667,FirePreventionDistrict#668,SupervisorDistrict#669,... 4 more fields] csv\n\n== Optimized Logical Plan ==\nRelation[CallNumber#646,UnitID#647,IncidentNumber#648,CallType#649,CallDate#650,WatchDate#651,CallFinalDisposition#652,AvailableDtTm#653,Address#654,City#655,Zipcode#656,Battalion#657,StationArea#658,Box#659,OriginalPriority#660,Priority#661,FinalPriority#662,ALSUnit#663,CallTypeGroup#664,NumAlarms#665,UnitType#666,UnitSequenceInCallDispatch#667,FirePreventionDistrict#668,SupervisorDistrict#669,... 4 more fields] csv\n\n== Physical Plan ==\n*(1) FileScan csv [CallNumber#646,UnitID#647,IncidentNumber#648,CallType#649,CallDate#650,WatchDate#651,CallFinalDisposition#652,AvailableDtTm#653,Address#654,City#655,Zipcode#656,Battalion#657,StationArea#658,Box#659,OriginalPriority#660,Priority#661,FinalPriority#662,ALSUnit#663,CallTypeGroup#664,NumAlarms#665,UnitType#666,UnitSequenceInCallDispatch#667,FirePreventionDistrict#668,SupervisorDistrict#669,... 4 more fields] Batched: false, Format: CSV, Location: InMemoryFileIndex[gs://ejercicios-bigdata1/notebooks/zeppelin/repo/sf-fire-calls.csv], PartitionFilters: [], PushedFilters: [], ReadSchema: struct<CallNumber:int,UnitID:string,IncidentNumber:int,CallType:string,CallDate:string,WatchDate:...\nimport org.apache.avro\n\u001b[1m\u001b[34mjsonFolder\u001b[0m: \u001b[1m\u001b[32mString\u001b[0m = gs://ejercicios-bigdata1/notebooks/zeppelin/repo/sf-fire-calls_json\n\u001b[1m\u001b[34mjsonFile\u001b[0m: \u001b[1m\u001b[32mString\u001b[0m = gs://ejercicios-bigdata1/notebooks/zeppelin/repo/sf-fire-calls.json\n\u001b[1m\u001b[34mcsvFolder\u001b[0m: \u001b[1m\u001b[32mString\u001b[0m = gs://ejercicios-bigdata1/notebooks/zeppelin/repo/sf-fire-calls-copy_csv\n\u001b[1m\u001b[34mcsvFile\u001b[0m: \u001b[1m\u001b[32mString\u001b[0m = gs://ejercicios-bigdata1/notebooks/zeppelin/repo/sf-fire-calls-copy.csv\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://cluster-99c4-m.europe-west2-a.c.handy-flame-333610.internal:35199/jobs/job?id=47",
+              "$$hashKey": "object:1073"
+            },
+            {
+              "jobUrl": "http://cluster-99c4-m.europe-west2-a.c.handy-flame-333610.internal:35199/jobs/job?id=48",
+              "$$hashKey": "object:1074"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1638261653494_1760127336",
+      "id": "paragraph_1638261653494_1760127336",
+      "dateCreated": "2021-11-30T08:40:53+0000",
+      "dateStarted": "2021-11-30T12:14:17+0000",
+      "dateFinished": "2021-11-30T12:14:27+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:219"
+    },
+    {
+      "title": "f. Revisar al guardar los ficheros (p.e. json, csv, etc) el número de ficheros  creados, revisar su contenido para comprender (constatar) como se guardan. i. ¿A qué se debe que hayan más de un fichero? ii. ¿Cómo obtener el número de particiones de un DataFrame? iii. ¿Qué formas existen para modificar el número de particiones de un  DataFrame? iv. Llevar a cabo el ejemplo modificando el número de particiones a 1 y  revisar de nuevo el/los ficheros guardados",
+      "text": "// I. Se debe a que spark particiona el contenido.\n// II. Mediante df.rdd.partitions.(size o length)\n// III. Existe el método coalesce(n) o repartition(n)\n// IV. Ver ejercicio anterior.",
+      "user": "anonymous",
+      "dateUpdated": "2021-11-30T11:06:09+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true,
+        "editorHide": false
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1638261669755_530311888",
+      "id": "paragraph_1638261669755_530311888",
+      "dateCreated": "2021-11-30T08:41:09+0000",
+      "status": "READY",
+      "$$hashKey": "object:220"
+    },
+    {
+      "text": "",
+      "user": "anonymous",
+      "dateUpdated": "2021-11-30T08:41:03+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true,
+        "editorHide": false
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1638261663928_798206088",
+      "id": "paragraph_1638261663928_798206088",
+      "dateCreated": "2021-11-30T08:41:03+0000",
+      "status": "READY",
+      "$$hashKey": "object:221"
+    }
+  ],
+  "name": "ejercicio SCALA",
+  "id": "2GNQX24Q3",
+  "defaultInterpreterGroup": "spark",
+  "version": "0.9.0-preview2",
+  "noteParams": {},
+  "noteForms": {},
+  "angularObjects": {},
+  "config": {
+    "isZeppelinNotebookCronEnable": false,
+    "looknfeel": "default",
+    "personalizedMode": "false"
+  },
+  "info": {},
+  "path": "/ejercicio SCALA"
+}
