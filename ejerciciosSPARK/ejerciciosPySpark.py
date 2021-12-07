@@ -147,6 +147,50 @@ df_neighborhood_most_calls_pyspark.show(3, truncate=False)
 
 #############################################################################################
 
+# - Which neighborhoods had the worst response times to fire calls in 2018? - PYSPARK SQL
 
+df_neighborhoods_worst_delay = callDate_neighborhoods_delay.filter(year(col("date"))==2018).\
+                                                            select(col("Neighborhood").alias("Barrio"), col("Delay")).\
+                                                            groupBy("Barrio").\
+                                                            agg(avg("Delay").alias("Retraso_promedio")).\
+                                                            orderBy(desc("Retraso_promedio"))
+df_neighborhoods_worst_delay.show(3, truncate=False)      
+
+
+#############################################################################################
+
+# - Which neighborhoods had the worst response times to fire calls in 2018? - PYSPARK SQL
+
+df_neighborhoods_worst_delay = callDate_neighborhoods_delay.filter(year(col("date"))==2018).\
+                                                            select(col("Neighborhood").alias("Barrio"), col("Delay")).\
+                                                            groupBy("Barrio").\
+                                                            agg(avg("Delay").alias("Retraso_promedio")).\
+                                                            orderBy(desc("Retraso_promedio"))
+df_neighborhoods_worst_delay.show(3, truncate=False)      
+
+#############################################################################################
+
+# - Which week in the year in 2018 had the most fire calls? - SQL
+
+df_week_most_calls_sql = spark.sql("SELECT weekofyear(date) AS Semana, COUNT(*) AS Num_llamadas\
+                                FROM callDate_neighborhoods_delay\
+                                WHERE YEAR(date) LIKE 2018\
+                                GROUP BY Semana\
+                                ORDER BY Num_llamadas DESC")
+
+df_week_most_calls_sql.show(3, truncate = False)
+
+#############################################################################################
+
+# - Which week in the year in 2018 had the most fire calls? - PYSPARK SQL
+
+df_week_most_calls = callDate_neighborhoods_delay.filter(year(col("date"))==2018).\
+                                                    select(weekofyear(col("date")).alias("Semana")).\
+                                                    groupBy("Semana").\
+                                                    count().withColumnRenamed("count", "num_llamadas").\
+                                                    orderBy(desc("num_llamadas"))
+    
+
+df_week_most_calls.show(3, truncate = False)
 
 #############################################################################################
