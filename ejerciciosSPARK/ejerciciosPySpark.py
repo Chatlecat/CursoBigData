@@ -19,18 +19,24 @@
 
 #   e. Utilizando el mismo ejemplo utilizado en el capítulo para guardar en parquet y 
 #   guardar los datos en los formatos:
-#      i. JSON
-#      ii. CSV (dándole otro nombre para evitar sobrescribir el fichero origen)
+
+#      i.   JSON
+#      ii.  CSV (dándole otro nombre para evitar sobrescribir el fichero origen)
 #      iii. AVRO
 
 #   f. Revisar al guardar los ficheros (p.e. json, csv, etc) el número de ficheros 
 #   creados, revisar su contenido para comprender (constatar) como se guardan.
-#      i. ¿A qué se debe que hayan más de un fichero?
-#      ii. ¿Cómo obtener el número de particiones de un DataFrame?
+
+#      i.   ¿A qué se debe que hayan más de un fichero?
+
+#      ii.  ¿Cómo obtener el número de particiones de un DataFrame?
+
 #      iii. ¿Qué formas existen para modificar el número de particiones de un 
 #      DataFrame?
-#      iv. Llevar a cabo el ejemplo modificando el número de particiones a 1 y 
+
+#      iv.  Llevar a cabo el ejemplo modificando el número de particiones a 1 y 
 #      revisar de nuevo el/los ficheros guardados.
+
 ##########################################################################################
 import findspark
 findspark.init()
