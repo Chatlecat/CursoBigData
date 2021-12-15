@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="8a4a1a7a-33ab-474a-8033-0b1a02f4c44e" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CodeStyleSettingsInfer">
+    <option name="done" value="true" />
+  </component>
+  <component name="ProjectCodeStyleSettingsMigration">
+    <option name="version" value="1" />
+  </component>
+  <component name="ProjectId" id="22GcVh4XOQMh3OFRvmKzVxOFjhj" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../PruebaSpark2" />
+  </component>
+  <component name="RunManager" selected="Application.App">
+    <configuration name="App (1)" type="Application" factoryName="Application" nameIsGenerated="true">
+      <option name="INCLUDE_PROVIDED_SCOPE" value="true" />
+      <option name="MAIN_CLASS_NAME" value="org.example.App" />
+      <module name="chapter4" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="App" type="Application" factoryName="Application" nameIsGenerated="true">
+      <option name="INCLUDE_PROVIDED_SCOPE" value="true" />
+      <option name="MAIN_CLASS_NAME" value="org.example.App" />
+      <module name="chapter4" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="Application" factoryName="Application">
+      <option name="INCLUDE_PROVIDED_SCOPE" value="true" />
+      <option name="MAIN_CLASS_NAME" value="org.example.App" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="Application.App" />
+      <item itemvalue="Application.App (1)" />
+    </list>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="8a4a1a7a-33ab-474a-8033-0b1a02f4c44e" name="Default Changelist" comment="" />
+      <created>1639467389297</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1639467389297</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="440" y="107" key="#com.intellij.codeInsight.editorActions.RestoreReferencesDialog" timestamp="1639467849852">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="440" y="107" key="#com.intellij.codeInsight.editorActions.RestoreReferencesDialog/0.0.1366.728@0.0.1366.728" timestamp="1639467849852" />
+    <state x="49" y="0" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1639481524249">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="49" y="0" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1366.728@0.0.1366.728" timestamp="1639481524249" />
+    <state x="439" y="136" key="#com.intellij.ide.util.TreeClassChooserDialog" timestamp="1639468919468">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="439" y="136" key="#com.intellij.ide.util.TreeClassChooserDialog/0.0.1366.728@0.0.1366.728" timestamp="1639468919468" />
+    <state x="463" y="119" key="FileChooserDialogImpl" timestamp="1639563062646">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="463" y="119" key="FileChooserDialogImpl/0.0.1366.728@0.0.1366.728" timestamp="1639563062646" />
+    <state width="1323" height="278" key="GridCell.Tab.0.bottom" timestamp="1639499259168">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state width="1323" height="278" key="GridCell.Tab.0.bottom/0.0.1366.728@0.0.1366.728" timestamp="1639499259168" />
+    <state width="1323" height="278" key="GridCell.Tab.0.center" timestamp="1639499259168">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state width="1323" height="278" key="GridCell.Tab.0.center/0.0.1366.728@0.0.1366.728" timestamp="1639499259168" />
+    <state width="1323" height="278" key="GridCell.Tab.0.left" timestamp="1639499259168">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state width="1323" height="278" key="GridCell.Tab.0.left/0.0.1366.728@0.0.1366.728" timestamp="1639499259168" />
+    <state width="1323" height="278" key="GridCell.Tab.0.right" timestamp="1639499259168">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state width="1323" height="278" key="GridCell.Tab.0.right/0.0.1366.728@0.0.1366.728" timestamp="1639499259168" />
+    <state x="406" y="176" key="com.intellij.ide.util.TipDialog" timestamp="1639477011838">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="406" y="176" key="com.intellij.ide.util.TipDialog/0.0.1366.728@0.0.1366.728" timestamp="1639477011838" />
+    <state x="65" y="66" key="new project wizard" timestamp="1639484689877">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="65" y="66" key="new project wizard/0.0.1366.728@0.0.1366.728" timestamp="1639484689877" />
+  </component>
+</project>
