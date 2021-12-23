@@ -1,0 +1,33 @@
+Ejercicios Del Padrón de Madrid
+
+1) Creación de tablas en formato texto
+	1.1-Crear base de datos data_padron
+		hive > CREATE DATABASE data_padron;
+
+	1.2-Crear la tabla de datos padron_txt con todos los campos del fichero CSV y cargar los
+datos mediante el comando LOAD DATA LOCAL INPATH. La tabla tendrá formato 
+texto y tendrá como delimitador de campo el caracter ';' y los campos que en el 
+documento original están encerrados en comillas dobles '"' no deben estar 
+envueltos en estos caracteres en la tabla de Hive (es importante indicar esto 
+utilizando el serde de OpenCSV, si no la importación de las variables que hemos 
+indicado como numéricas fracasará ya que al estar envueltos en comillas los toma 
+como strings) y se deberá omitir la cabecera del fichero de datos al crear la tabla.
+		
+		hive > CREATE TABLE IF NOT EXISTS padron_txt (nombre_columna int, etc)
+		     > ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde'
+		     > (
+		     >		"characterSeparator" = '\u0059'
+		     > 		"quoteChar" = "\""
+		     > )
+		     > STORED AS TEXTFILE;
+
+
+	
+	1.3-Hacer trim sobre los datos para eliminar los espacios innecesarios guardando la 
+tabla resultado como padron_txt_2. (Este apartado se puede hacer creando la tabla 
+con una sentencia CTAS.)
+	
+		hive > CREATE TABLE 
+
+
+AS SELECT 
