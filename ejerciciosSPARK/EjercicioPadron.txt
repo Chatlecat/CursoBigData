@@ -4,30 +4,402 @@ Ejercicios Del Padrón de Madrid
 	1.1-Crear base de datos data_padron
 		hive > CREATE DATABASE data_padron;
 
-	1.2-Crear la tabla de datos padron_txt con todos los campos del fichero CSV y cargar los
-datos mediante el comando LOAD DATA LOCAL INPATH. La tabla tendrá formato 
-texto y tendrá como delimitador de campo el caracter ';' y los campos que en el 
-documento original están encerrados en comillas dobles '"' no deben estar 
-envueltos en estos caracteres en la tabla de Hive (es importante indicar esto 
-utilizando el serde de OpenCSV, si no la importación de las variables que hemos 
-indicado como numéricas fracasará ya que al estar envueltos en comillas los toma 
-como strings) y se deberá omitir la cabecera del fichero de datos al crear la tabla.
+	1.2-Crear la tabla de datos padron_txt con todos los campos del fichero CSV y 
+	cargar los datos mediante el comando LOAD DATA LOCAL INPATH. La tabla tendrá 
+	formato texto y tendrá como delimitador de campo el caracter ';' y los campos
+	que en el documento original están encerrados en comillas dobles '"' no deben 
+	estar envueltos en estos caracteres en la tabla de Hive (es importante indicar 
+	esto utilizando el serde de OpenCSV, si no la importación de las variables que 
+	hemos indicado como numéricas fracasará ya que al estar envueltos en comillas 
+	los toma como strings) y se deberá omitir la cabecera del fichero de datos al 
+	crear la tabla.
 		
-		hive > CREATE TABLE IF NOT EXISTS padron_txt (nombre_columna int, etc)
-		     > ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde'
-		     > (
-		     >		"characterSeparator" = '\u0059'
-		     > 		"quoteChar" = "\""
-		     > )
-		     > STORED AS TEXTFILE;
+		hive> CREATE TABLE padron_txt (COD_DISTRITO int, DESC_DISTRITO string, COD_DIST_BARRIO int, DESC_BARRIO int, COD_BARRIO string, COD_DIST_SECCION int, COD_SECCION int, COD_EDAD_INT int, EspanolesHombres int, EspanolesMujeres int, ExtranjerosHombres int, ExtranjerosMujeres int)
+    > ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde'
+    > WITH SERDEPROPERTIES
+    > (
+    >     "separatorChar" = '\u0059',
+    >     "quoteChar"     = "\""
+    > )   STORED AS TEXTFILE;
+
 
 
 	
-	1.3-Hacer trim sobre los datos para eliminar los espacios innecesarios guardando la 
-tabla resultado como padron_txt_2. (Este apartado se puede hacer creando la tabla 
-con una sentencia CTAS.)
+	1.3-Hacer trim sobre los datos para eliminar los espacios innecesarios guardando 
+	la tabla resultado como padron_txt_2. (Este apartado se puede hacer creando la 
+	tabla con una sentencia CTAS.)
 	
-		hive > CREATE TABLE 
+		hive > CREATE TABLE padron_txt2
+		     > ROW FORMAT DELIMITED
+		     > FIELDS TERMINATED BY '|'
+		     > STORED AS TEXTFILE
+		     > SELECT 'columnas' y trim(de las columnas string) FROM padron_txt;
+
+	1.4-Investigar y entender la diferencia de incluir la palabra LOCAL en 
+	el comando LOAD DATA. 
+
+		LOAD DATA LOCAL hace referencia a ficheros del sistema de ficheros local
+		por lo tanto hace lectura de ficheros en un sistema NO-distribuido.
+		Mientras que por otro lado LOAD DATA (sin LOCAL) carga datos de un
+		sistema de almacenamiento distribuido (HDFS por defecto).
+
+	1.5-En este momento te habrás dado cuenta de un aspecto importante, los datos 
+	nulos de nuestras tablas vienen representados por un espacio vacío y no por un 
+	identificador de nulos comprensible para la tabla. Esto puede ser un problema 
+	para el tratamiento posterior de los datos. Podrías solucionar esto creando una 
+	nueva tabla utiliando sentencias case when que sustituyan espacios en blanco por 
+	0. Para esto primero comprobaremos que solo hay espacios en blanco en las 
+	variables numéricas correspondientes a las últimas 4 variables de nuestra tabla 
+	(podemos hacerlo con alguna sentencia de HiveQL) y luego aplicaremos las 
+	sentencias case when para sustituir por 0 los espacios en blanco. (Pista: es 
+	útil darse cuenta de que un espacio vacío es un campo con longitud 0). Haz esto 
+	solo para la tabla padron_txt.
+
+		hive > CREATE TABLE padron_txt_no_null
+		     > ROW FORMAT DELIMITED
+		     > FIELDS TERMINATED BY '|'
+		     > STORED AS TEXTFILE
+		     > AS SELECT 'columnas',...,
+		     > CASE
+		     > WHEN (length(campo string) > 0) THEN campo
+		     > ELSE '0' END AS campo
+		     > ...
+		     > FROM padron_txt;
+
+	1.6-Una manera tremendamente potente de solucionar todos los problemas previos 
+	(tanto las comillas como los campos vacíos que no son catalogados como null y 
+	los espacios innecesarios) es utilizar expresiones regulares (regex) que nos 
+	proporciona OpenCSV.
+	
+	Para ello utilizamos :
+	 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.RegexSerDe'
+ 	 
+	 WITH SERDEPROPERTIES ('input.regex'='XXXXXXX')
 
 
-AS SELECT 
+
+2) El formato columnar: parquet.
+	2.1-¿Qué es CTAS?		
+		CTAS hace referencia a la instrucción Create Table As Select la cual 
+		permite	elegir de qué formato parte la tabla a partir de otra tabla.
+
+	2.2-Crear tabla Hive padron_parquet (cuyos datos serán almacenados en el 
+	formato columnar parquet) a través de la tabla padron_txt mediante un CTAS.
+
+		CREATE TABLE padron_parquet
+		ROW FORMAT DELIMITED
+		FIELDS TERMINATED BY '|'
+		STORED AS PARQUET
+		AS SELECT *
+		FROM padron_txt;
+
+	2.3- Crear tabla Hive padron_parquet_2 a través de la tabla padron_txt_2 
+	mediante un CTAS. En este punto deberíamos tener 4 tablas, 2 en txt (padron_txt 
+	y padron_txt_2, la primera con espacios innecesarios y la segunda sin espacios 
+	innecesarios) y otras dos tablas en formato parquet (padron_parquet y 
+	padron_parquet_2, la primera con espacios y la segunda sin ellos).
+		
+		CREATE TABLE padron_parquet2
+		ROW FORMAT DELIMITED
+		FIELDS TERMINATED BY '|'
+		STORED AS PARQUET
+		AS SELECT *
+		FROM padron_txt2;
+
+		
+	2.4-Opcionalmente también se pueden crear las tablas directamente desde 0 
+	(en lugar de mediante CTAS) en formato parquet igual que lo hicimos para el
+	formato txt incluyendo la sentencia STORED AS PARQUET. Es importante para
+	comparaciones posteriores que la tabla padron_parquet conserve los espacios
+	innecesarios y la tabla padron_parquet_2 no los tenga. Dejo a tu elección cómo 
+	hacerlo.
+
+	/////////////////////////////////////////////////////////////////////////////
+	2.5-Investigar en qué consiste el formato columnar parquet y las ventajas de 
+	trabajar con este tipo de formatos.
+
+		El formato columnar Parquet es el formato de almacenamiento 
+		estándar de la era de Big Data
+		
+		Entre sus ventajas está la alta relación de compresión y operaciones de
+		entrada/salida más pequeñas.
+
+	
+	2.6-Comparar el tamaño de los ficheros de los datos de las tablas padron_txt 
+	(txt), padron_txt_2 (txt pero no incluye los espacios innecesarios), 
+	padron_parquet y padron_parquet_2 (alojados en hdfs cuya ruta se puede obtener 
+	de la propiedad location de cada tabla por ejemplo haciendo "show create 
+	table").
+		padron_txt ->       22623687  (CON ESPACIOS)
+		padron_txt2 ->      12172073  (SIN ESPACIOS)
+		padron_parquet ->     933017  (CON ESPACIOS)
+		padron_parquet2 ->    930967  (SIN ESPACIOS)
+
+		
+
+3) Juguemos con Impala.
+
+	3.1-¿Qué es Impala?
+		
+		Impala es un motor de consultas SQL cuya especialidad son las consultas 
+		de baja latencia sobre datos distribuidos.
+
+		Como decía la principal ventaja sobre Hive es su baja latencia, 
+		permitiendo así las consultas interactivas.
+
+	3.2-¿En qué se diferencia de Hive?
+
+		Al ser un motor de consultas SQL que trabaja por encima de la JVM y
+		que usa la metastore de Hive, al estar en cada una de las máquinas del
+		sist. distribuido aprovecha la localidad de los datos en su favor,
+		permitiendo así su gran rapidez.
+
+	3.3-Comando INVALIDATE METADATA, ¿en qué consiste?
+
+		Es un comando para refrescar los datos en Impala, se puede usar Refresh
+		que es menos costoso en caso de que sólo se quiera actualizar los datos
+		de una tabla.
+
+	3.4-Hacer invalidate metadata en Impala de la base de datos datos_padron.
+
+		INVALIDATE METADATA data_patron.padron_txt;
+
+	3.5-Calcular el total de EspanolesHombres, espanolesMujeres, ExtranjerosHombres y 
+	ExtranjerosMujeres agrupado por DESC_DISTRITO y DESC_BARRIO.
+
+		SELECT DESC_DISTRITO, DESC_BARRIO,
+        	SUM(cast(EspanolesHombres AS INT)) AS Total_ESP_Hombres, 
+		SUM(cast(EspanolesMujeres AS INT)) AS Total_ESP_Mujeres,
+		SUM(cast(ExtranjerosHombres AS INT)) AS Total_EXT_Hombres,
+		SUM(cast(ExtranjerosMujeres AS INT)) AS Total_EXT_Mujeres
+		FROM data_patron.padron_txt2
+		GROUP BY DESC_BARRIO, DESC_DISTRITO;
+
+	3.6-Llevar a cabo las consultas en Hive en las tablas padron_txt_2 y 
+	padron_parquet_2 (No deberían incluir espacios innecesarios). ¿Alguna 
+	conclusión?
+
+		La ejecución con la tabla usando parquet podemos ver que gana
+		rendimiento.	
+
+	3.7-Llevar a cabo la misma consulta sobre las mismas tablas en Impala. ¿Alguna 
+	conclusión?
+
+		Por algún motivo, le cuesta más usar el formato parquet.
+
+	
+	3.8-¿Se percibe alguna diferencia de rendimiento entre Hive e Impala?
+
+		Se denota una diferencia de rendimiento bastante notoria, Impala
+		es mucho más rápido que Hive.
+
+		Ejecución Hive TXT -> 1m 14s
+		Ejecución Hive Parquet -> 41.53s
+		Ejecución Impala TXT -> 1.61s
+		Ejecución Impala Parquet -> 3.38s
+
+4)Sobre tablas particionadas.
+
+	4.1-Crear tabla (Hive) padron_particionado particionada por campos 
+	DESC_DISTRITO y DESC_BARRIO cuyos datos estén en formato parquet.
+
+		CREATE TABLE padron_particionado (DESC_DISTRITO string,  
+		COD_DIST_BARRIO string, DESC_BARRIO string, 
+		COD_DIST_SECCION string, COD_SECCION string, 
+		COD_EDAD_INT string, EspanolesHombres string, 
+		EspanolesMujeres string, ExtranjerosHombres string, 
+		ExtranjerosMujeres string)
+		partitioned by (COD_DISTRITO string, COD_BARRIO string)
+		STORED AS PARQUET;
+
+	4.2-Insertar datos (en cada partición) dinámicamente (con Hive) en la 
+	tabla recién creada a partir de un select de la tabla padron_parquet_2.
+
+		set hive.exec.dynamic.partition=true;
+    		set hive.exec.dynamic.partition.mode=nonstrict;
+    		SET hive.exec.max.dynamic.partitions = 10000;
+
+	        INSERT INTO TABLE padron_particionado 
+		PARTITION(COD_DISTRITO, COD_BARRIO)
+    		SELECT * FROM padron_parquet2;
+
+
+	4.3-Hacer invalidate metadata en Impala de la base de datos padron_particionado.
+		INVALIDATE METADATA data_patron.padron_particionado;
+
+	4.4-Calcular el total de EspanolesHombres, EspanolesMujeres, ExtranjerosHombres y 
+	ExtranjerosMujeres agrupado por DESC_DISTRITO y DESC_BARRIO para los distritos 
+	CENTRO, LATINA, CHAMARTIN, TETUAN, VICALVARO y BARAJAS.
+
+		SELECT COD_DISTRITO, DESC_DISTRITO, 
+		sum(CAST (EspanolesHombres AS INT)) as Espanoles_Hombres, 
+    		sum(CAST(espanolesMujeres AS INT)) as Espanoles_Mujeres, 
+    		sum(CAST (ExtranjerosHombres AS INT)) as Extranjeros_Hombres, 
+    		sum(CAST (extranjerosmujeres AS INT)) as Extranjeros_Mujeres
+    		FROM data_patron.padron_particionado AS p 
+		WHERE p.COD_DISTRITO IN (SELECT DISTINCT(COD_DISTRITO) 
+                        		FROM data_patron.padron_particionado 
+                        		WHERE DESC_DISTRITO IN 
+					("CENTRO", "LATINA", "CHAMARTIN"
+					, "TETUAN", "VICALVARO", "BARAJAS"))
+                GROUP BY p.COD_DISTRITO, p.DESC_DISTRITO;
+	4.5-Llevar a cabo la consulta en Hive en las tablas padron_parquet y 
+	padron_partitionado. ¿Alguna conclusión?
+
+		padron_particionado -> 1m 7s
+	
+		padron_parquet2 -> 58.14s
+
+		Cuando se ejecuta sobre parquet sin particionar, hace menos entradas
+		a hdfs, y tarda un poco menos, esto puede ser debido a que
+		ejecutamos en un solo nodo.
+
+	4.6-Llevar a cabo la consulta en Impala en las tablas padron_parquet y 
+	padron_partitionado. ¿Alguna conclusión?
+
+		padron_particionado -> 0.93s
+	
+		padron_parquet2 -> 1.7s
+
+		
+	4.7-Hacer consultas de agregación (Max, Min, Avg, Count) tal cual el ejemplo anterior 
+	con las 3 tablas (padron_txt_2, padron_parquet_2 y padron_particionado) y 
+	comparar rendimientos tanto en Hive como en Impala y sacar conclusiones.
+
+		SELECT COD_DISTRITO, DESC_DISTRITO, max(CAST (EspanolesHombres 
+						AS INT)) as max_espanoles_hombres, 
+    		min( CAST(espanolesMujeres AS INT)) as min_Espanoles_Mujeres, 
+	        avg(CAST (ExtranjerosHombres AS INT)) as avg_Extranjeros_Hombres, 
+    		count(CAST (extranjerosmujeres AS INT)) as count_Extranjeros_Mujeres
+    		FROM padron_particionado AS p WHERE p.COD_DISTRITO IN 
+			(SELECT DISTINCT(COD_DISTRITO) FROM padron_particionado 
+                        WHERE DESC_DISTRITO IN ("CENTRO", "LATINA", 
+			"CHAMARTIN", "TETUAN", "VICALVARO", "BARAJAS"))
+                GROUP BY p.COD_DISTRITO, p.COD_BARRIO;
+
+		hive (SIN particionar) -> 1m 17s
+		hive (particionado) -> 1m 18s
+		hive (txt) -> 1m 8s
+		impala (SIN particionar) -> 1.32s
+		impala (particionado) -> 1.22s
+		impala (txt) -> 1.2s
+
+
+5)Trabajando con tablas HDFS
+
+	5.1-Crear un documento de texto en el almacenamiento local que contenga una 
+	secuencia de números distribuidos en filas y separados por columnas, llámalo 
+	datos1 y que sea por ejemplo:
+		1,2,3
+		4,5,6
+		7,8,9
+
+		DONE
+
+	5.2-Crear un segundo documento (datos2) con otros números pero la misma 
+	estructura.
+		
+		DONE
+
+	5.3-Crear un directorio en HDFS con un nombre a placer, por ejemplo, /test. Si estás en 
+	una máquina Cloudera tienes que asegurarte de que el servicio HDFS está activo ya 
+	que puede no iniciarse al encender la máquina (puedes hacerlo desde el Cloudera 
+	Manager). A su vez, en las máquinas Cloudera es posible (dependiendo de si 
+	usamos Hive desde consola o desde Hue) que no tengamos permisos para crear 
+	directorios en HDFS salvo en el directorio /user/cloudera.
+
+		$ hadoop fs -mkdir /test
+
+	5.4-Mueve tu fichero datos1 al directorio que has creado en HDFS con un comando 
+	desde consola.
+
+		$ hadoop fs -put "Escritorio/datos1" "/test"
+
+	5.5-Desde Hive, crea una nueva database por ejemplo con el nombre numeros. Crea 
+	una tabla que no sea externa y sin argumento location con tres columnas 
+	numéricas, campos separados por coma y delimitada por filas. La llamaremos por 
+	ejemplo numeros_tbl.
+		
+		hive > CREATE DATABASE numeros;
+
+		hive >  CREATE TABLE numeros_tbl (n1 INT, n2 INT, n3 INT, n4 INT,
+			n5 INT, n6 INT, n7 INT)
+			ROW FORMAT DELIMITED
+			FIELDS TERMINATED BY ','
+			STORE AS TEXTFILE;
+
+	5.6-Carga los datos de nuestro fichero de texto datos1 almacenado en HDFS en la tabla 
+	de Hive. Consulta la localización donde estaban anteriormente los datos 
+	almacenados. ¿Siguen estando ahí? ¿Dónde están?. Borra la tabla, ¿qué ocurre con 
+	los datos almacenados en HDFS?
+		
+		hive > LOAD DATA INPATH '/test/datos1' INTO TABLE numeros_tbl;
+
+		¿Siguen estando ahí? - YA NO ESTAN O_O
+
+		LOS ENCONTRAMOS CON ESTO
+		$ hadoop fs -ls -R / | grep 'datos'
+		¿Dónde están? - /user/hive/warehouse/numeros.db/numeros_tbl/datos1
+
+		¿qué ocurre con los datos almacenados en HDFS? - YA NO HAY DATOS
+								       ò_ó
+
+	5.7-Vuelve a mover el fichero de texto datos1 desde el almacenamiento local al 
+	directorio anterior en HDFS.
+
+		HECHO
+
+	5.8-Desde Hive, crea una tabla externa sin el argumento location. Y carga datos1 (desde 
+	HDFS) en ella. ¿A dónde han ido los datos en HDFS? Borra la tabla ¿Qué ocurre con 
+	los datos en hdfs?
+
+		¿A dónde han ido los datos en HDFS? a la misma ruta anterior.
+		¿Qué ocurre cuando borras? Siguen en la misma ruta.
+
+	5.9-Borra el fichero datos1 del directorio en el que estén. Vuelve a insertarlos en el 
+	directorio que creamos inicialmente (/test). Vuelve a crear la tabla numeros desde 
+	hive pero ahora de manera externa y con un argumento location que haga 
+	referencia al directorio donde los hayas situado en HDFS (/test). No cargues los 
+	datos de ninguna manera explícita. Haz una consulta sobre la tabla que acabamos 
+	de crear que muestre todos los registros. ¿Tiene algún contenido?
+
+		Ya tiene todos los registros con solo añadir la localizacion donde
+		está el fichero datos1
+		~ LOCATION '/test';
+	
+	5.10-Inserta el fichero de datos creado al principio, "datos2" en el mismo directorio de 
+	HDFS que "datos1". Vuelve a hacer la consulta anterior sobre la misma tabla. ¿Qué 
+	salida muestra?
+		
+		Agregando estos datos a hdfs, se agregan a la tabla automáticamente
+
+	5.11-Extrae conclusiones de todos estos anteriores apartados.
+		Si creamos la tabla sin más e insertamos los datos de HDFS
+		si hacemos drop de la tabla estos se borran.
+
+		Si creamos la tabla con EXTERNAL (externa) e insertamos los datos
+		desde HDFS, si hacemos el drop de la tabla, los datos permanecerán
+		en el warehouse
+
+		Si creamos la tabla tanto con EXTERNAL como con LOCATION [dir]
+		lo que conseguimos es que los datos aun dropeando la tabla permanezcan
+		en el directorio del que se recogen.
+
+6)Un poquito de spark.
+	
+	6.1-Comenzamos realizando la misma práctica que hicimos en Hive en Spark, importando el 
+	csv. Sería recomendable intentarlo con opciones que quiten las "" de los campos, que 
+	ignoren los espacios innecesarios en los campos, que sustituyan los valores vacíos por 0 y 
+	que infiera el esquema.
+
+		
+
+		
+
+
+		
+		
+
+
+
+
