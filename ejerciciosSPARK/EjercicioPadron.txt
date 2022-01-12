@@ -14,13 +14,13 @@ Ejercicios Del Padrón de Madrid
 	los toma como strings) y se deberá omitir la cabecera del fichero de datos al 
 	crear la tabla.
 		
-		hive> CREATE TABLE padron_txt (COD_DISTRITO int, DESC_DISTRITO string, COD_DIST_BARRIO int, DESC_BARRIO int, COD_BARRIO string, COD_DIST_SECCION int, COD_SECCION int, COD_EDAD_INT int, EspanolesHombres int, EspanolesMujeres int, ExtranjerosHombres int, ExtranjerosMujeres int)
-    > ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde'
-    > WITH SERDEPROPERTIES
-    > (
-    >     "separatorChar" = '\u0059',
-    >     "quoteChar"     = "\""
-    > )   STORED AS TEXTFILE;
+		hive > CREATE TABLE padron_txt (COD_DISTRITO int, DESC_DISTRITO string, COD_DIST_BARRIO int, DESC_BARRIO int, COD_BARRIO string, COD_DIST_SECCION int, COD_SECCION int, COD_EDAD_INT int, EspanolesHombres int, EspanolesMujeres int, ExtranjerosHombres int, ExtranjerosMujeres int)
+    		     > ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde'
+    		     > WITH SERDEPROPERTIES
+    		     > (
+	    	     >     "separatorChar" = '\u0059',
+    		     >     "quoteChar"     = "\""
+    		     > ) STORED AS TEXTFILE;
 
 
 
@@ -79,7 +79,8 @@ Ejercicios Del Padrón de Madrid
 
 
 2) El formato columnar: parquet.
-	2.1-¿Qué es CTAS?		
+	2.1-¿Qué es CTAS?
+		
 		CTAS hace referencia a la instrucción Create Table As Select la cual 
 		permite	elegir de qué formato parte la tabla a partir de otra tabla.
 
@@ -114,8 +115,9 @@ Ejercicios Del Padrón de Madrid
 	innecesarios y la tabla padron_parquet_2 no los tenga. Dejo a tu elección cómo 
 	hacerlo.
 
-	/////////////////////////////////////////////////////////////////////////////
-	2.5-Investigar en qué consiste el formato columnar parquet y las ventajas de 
+	////////////////////////////////////////////////////////////////////////////
+
+	2.5-Investigar en qué consiste el formato columnar parquet y las ventajas de 
 	trabajar con este tipo de formatos.
 
 		El formato columnar Parquet es el formato de almacenamiento 
@@ -242,7 +244,8 @@ Ejercicios Del Padrón de Madrid
                         		WHERE DESC_DISTRITO IN 
 					("CENTRO", "LATINA", "CHAMARTIN"
 					, "TETUAN", "VICALVARO", "BARAJAS"))
-                GROUP BY p.COD_DISTRITO, p.DESC_DISTRITO;
+                GROUP BY p.COD_DISTRITO, p.DESC_DISTRITO;
+
 	4.5-Llevar a cabo la consulta en Hive en las tablas padron_parquet y 
 	padron_partitionado. ¿Alguna conclusión?
 
@@ -391,6 +394,361 @@ Ejercicios Del Padrón de Madrid
 	csv. Sería recomendable intentarlo con opciones que quiten las "" de los campos, que 
 	ignoren los espacios innecesarios en los campos, que sustituyan los valores vacíos por 0 y 
 	que infiera el esquema.
+
+	    val padronPath =
+	      "file:/Users/carlos.borras/Desktop/padron.csv"
+	    	val padronDF = spark.read
+	      	.option("header", "true")
+	      	.option("inferschema", "true")
+	      	.option("delimiter", ";")
+		.option("quote", "\"")
+	      	.csv(padronPath).withColumn("DESC_DISTRITO", trim(col("DESC_DISTRITO")))
+	      	.withColumn("DESC_BARRIO", trim(col("DESC_BARRIO")))
+	      	.na.fill(0)
+
+	    padronDF.printSchema()
+	    padronDF.show(10,false)
+
+    6.3 - Enumera todos los barrios
+
+	    padronDF.select("DESC_BARRIO").distinct().show(131,false)
+
+    6.4 - Crea una vista temporal de nombre "padron" y a través de ella cuenta el número de barrios
+    diferentes que hay.
+
+	    padronDF.createOrReplaceTempView("padron")
+	    spark.sql("SELECT COUNT(DISTINCT(DESC_BARRIO)) FROM padron").show(false)
+
+    6.5 - Crea una nueva columna que muestre la longitud de los campos de la columna
+    DESC_DISTRITO y que se llame "longitud".
+
+	    val padron_longitudDF = padronDF.withColumn("longitud", length(col("DESC_DISTRITO")))
+	    padron_longitudDF.show(false)
+
+    6.6 - Crea una nueva columna que muestre el valor 5 para cada uno de los registros de la tabla.
+
+	    var padron_5_DF = padron_longitudDF.withColumn("valor5", lit(5))
+	    padron_5_DF.show(false)
+
+    6.7 - Borra esta columna.
+	    
+	    padron_5_DF = padron_5_DF.drop("valor5")
+	    padron_5_DF.show(false)
+
+    6.8 - Particiona el DataFrame por las variables DESC_DISTRITO y DESC_BARRIO.
+	    
+	    val partitioned = padronDF.repartition(col("DESC_BARRIO"), col("DESC_DISTRITO"))
+
+	    partitioned.show(false)
+
+    6.9 - Almacénalo en caché. Consulta en el puerto 4040 (UI de Spark) de tu usuario local el estado
+    de los rdds almacenados.
+
+	    partitioned.cache()
+
+    6.10 - Lanza una consulta contra el DF resultante en la que muestre el número total de
+    "espanoleshombres", "espanolesmujeres", extranjeroshombres" y "extranjerosmujeres"
+    para cada barrio de cada distrito. Las columnas distrito y barrio deben ser las primeras en
+    aparecer en el show. Los resultados deben estar ordenados en orden de más a menos
+    según la columna "extranjerosmujeres" y desempatarán por la columna
+    "extranjeroshombres".
+
+	    partitioned.select("DESC_DISTRITO", "DESC_BARRIO",
+	      "espanoleshombres", "espanolesmujeres", "extranjeroshombres", "extranjerosmujeres")
+	    .groupBy("DESC_DISTRITO", "DESC_BARRIO")
+	      .sum("espanoleshombres", "espanolesmujeres", "extranjeroshombres", "extranjerosmujeres")
+	      .orderBy(desc("sum(extranjerosmujeres)"), desc("sum(extranjeroshombres)"))
+	      .show(false)
+
+    6.11 - Elimina el registro en caché.
+	    partitioned.unpersist()
+
+    6.12 - Crea un nuevo DataFrame a partir del original que muestre únicamente una columna con
+    DESC_BARRIO, otra con DESC_DISTRITO y otra con el número total de "espanoleshombres"
+    residentes en cada distrito de cada barrio. Únelo (con un join) con el DataFrame original a
+    través de las columnas en común
+
+	    val padronEspH_Ba_Di = padronDF.select("DESC_DISTRITO", "DESC_BARRIO", "espanoleshombres")
+	      .groupBy("DESC_BARRIO", "DESC_DISTRITO").sum("espanoleshombres")
+	      .withColumnRenamed("sum(espanoleshombres)", "TotalEspHombresBarrio")
+
+
+	    val padronJOIN_DF = padronEspH_Ba_Di.join(padronDF, (padronEspH_Ba_Di("DESC_BARRIO") === padronDF("DESC_BARRIO")
+	      && padronEspH_Ba_Di("DESC_DISTRITO")=== padronDF("DESC_DISTRITO")))
+
+	    padronJOIN_DF.show(false)
+
+
+	6.13 - Repite la función anterior utilizando funciones de ventana. (over(Window.partitionBy.....))
+
+	    val windowSpec = Window.partitionBy("DESC_DISTRITO", "DESC_BARRIO")
+	      padronDF
+	      .withColumn("TotalEspHombres", sum("espanoleshombres").over(windowSpec))
+	      .show(false)
+
+    6.14 - Mediante una función Pivot muestra una tabla (que va a ser una tabla de contingencia) que
+    contenga los valores totales ()la suma de valores) de espanolesmujeres para cada distrito y
+    en cada rango de edad (COD_EDAD_INT). Los distritos incluidos deben ser únicamente
+    CENTRO, BARAJAS y RETIRO y deben figurar como columnas . El aspecto debe ser similar a
+    este:
+
+	    padronDF.where("DESC_DISTRITO IN ('CENTRO', 'BARAJAS', 'RETIRO')").groupBy("COD_EDAD_INT")
+	      .pivot("DESC_DISTRITO").sum("espanolesmujeres")
+	      .orderBy("COD_EDAD_INT")
+	      .show(false)
+
+    6.15 - Utilizando este nuevo DF, crea 3 columnas nuevas que hagan referencia a qué porcentaje
+    de la suma de "espanolesmujeres" en los tres distritos para cada rango de edad representa
+    cada uno de los tres distritos. Debe estar redondeada a 2 decimales. Puedes imponerte la
+    condición extra de no apoyarte en ninguna columna auxiliar creada para el caso.
+
+	    padronDF.where("DESC_DISTRITO LIKE 'BARAJAS'").groupBy("DESC_DISTRITO").sum("espanolesmujeres").show(false)
+	    padronDF.where("DESC_DISTRITO IN ('CENTRO', 'BARAJAS', 'RETIRO')").groupBy("COD_EDAD_INT")
+	      .pivot("DESC_DISTRITO").sum("espanolesmujeres")
+	      .orderBy("COD_EDAD_INT")
+	      .na.fill(0)
+	      .withColumn("PorcentajeBarajas", round($"Barajas" 
+	        / padronDF.where("DESC_DISTRITO LIKE 'BARAJAS'")
+	        .groupBy("DESC_DISTRITO").sum("espanolesmujeres").first()(1) * 100,2))
+	      .withColumn("PorcentajeCentro", round($"CENTRO" 
+	        / padronDF.where("DESC_DISTRITO LIKE 'CENTRO'")
+	        .groupBy("DESC_DISTRITO").sum("espanolesmujeres").first()(1)* 100, 2))
+	      .withColumn("PorcentajeRetiro", round($"RETIRO" 
+	        / padronDF.where("DESC_DISTRITO LIKE 'RETIRO'")
+	        .groupBy("DESC_DISTRITO").sum("espanolesmujeres").first()(1)* 100, 2))
+	      .show(200,false)
+
+	    
+	    //LA BUENA ES LA DE ABAJO (6.15)
+
+    	padronDF.where("DESC_DISTRITO IN ('CENTRO', 'BARAJAS', 'RETIRO')").groupBy("COD_EDAD_INT")
+          .pivot("DESC_DISTRITO").sum("espanolesmujeres")
+      	  .orderBy("COD_EDAD_INT")
+	      .na.fill(0)
+   		  .withColumn("PorcentajeBarajas", round(($"Barajas" / ($"Barajas" + $"Centro" + $"Retiro"))*100,2))
+     	  .whereithColumn("PorcentajeCentro", round(($"Centro" / ($"Barajas" + $"Centro" + $"Retiro"))*100,2))
+      	  .withColumn("PorcentajeRetiro", round(($"Retiro" / ($"Barajas" + $"Centro" + $"Retiro"))*100,2))
+      	  .show(200,false)
+
+
+	6.16 - Guarda el archivo csv original particionado por distrito y por barrio (en ese orden) en un
+	directoriosctorio local. Consulta el directorio para ver la estructura de los ficheros y comprueba
+	que es la esperada.
+
+    	partitioned.write.format("csv").option("header", "true").option("delimiter", ";").save("file:/Users/carlos.borras/Desktop/padron/padron_csv")
+
+
+	6.17 - Haz el mismo guardado pero en formato parquet. Compara el peso del archivo con el
+	resultado anterior.
+
+    	partitioned.write.format("parquet").option("header", "true").save("file:/Users/carlos.borras/Desktop/padron/padron_parquet")
+
+    	- De 12MB (csv) pasa a 600KB (parquet)
+
+
+
+7)SPARK Y HIVE
+      val spark = SparkSession.builder()
+      .appName("Apartado7")
+      .master("local")
+      .enableHiveSupport()
+      .getOrCreate()
+
+    spark.sparkContext.setLogLevel("ERROR")
+    import spark.implicits._
+
+
+    //6.1
+    val padronPath =
+      "file:///home/cloudera/Desktop/padron.csv"
+
+    spark.sql("CREATE TABLE IF NOT EXISTS padron (COD_DISTRITO int, DESC_DISTRITO string, COD_DIST_BARRIO int" +
+      ", DESC_BARRIO int, COD_BARRIO string, COD_DIST_SECCION int, COD_SECCION int, COD_EDAD_INT int" +
+      ", EspanolesHombres int, EspanolesMujeres int, ExtranjerosHombres int, ExtranjerosMujeres int) " +
+      "ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde' " +
+      "WITH SERDEPROPERTIES " +
+      "( " +
+      "\"separatorChar\" = ';', " +
+      "\"quoteChar\"     = '\"' " +
+      ") " +
+      "STORED AS TEXTFILE")
+
+
+    spark.sql("ALTER TABLE padron SET TBLPROPERTIES('skip.header.line.count'='1')")
+
+    spark.sql("load data local inpath '/home/cloudera/Desktop/padron.csv' into table padron")
+    spark.sql("DROP TABLE padron_txt2")
+    spark.sql("CREATE TABLE padron_txt2" +
+      " ROW FORMAT DELIMITED" +
+      " FIELDS TERMINATED BY '|'" +
+      " STORED AS TEXTFILE" +
+      " SELECT COD_DISTRITO, TRIM(DESC_DISTRITO) AS DESC_DISTRITO, COD_DIST_BARRIO, TRIM(DESC_BARRIO) AS DESC_BARRIO" +
+      ", COD_BARRIO," +
+      " COD_DIST_SECCION, COD_SECCION, COD_EDAD_INT," +
+      " CASE WHEN (length(ESPANOLESHOMBRES) > 0) THEN ESPANOLESHOMBRES ELSE '0' END AS ESPANOLESHOMBRES," +
+      " CASE WHEN (length(ESPANOLESMUJERES) > 0) THEN ESPANOLESMUJERES ELSE '0' END AS ESPANOLESMUJERES," +
+      " CASE WHEN (length(EXTRANJEROSHOMBRES) > 0) THEN EXTRANJEROSHOMBRES ELSE '0' END AS EXTRANJEROSHOMBRES," +
+      " CASE WHEN (length(EXTRANJEROSMUJERES) > 0) THEN EXTRANJEROSMUJERES ELSE '0' END AS EXTRANJEROSMUJERES" +
+      " FROM padron")
+
+    spark.sql("ALTER TABLE padron_txt2 SET TBLPROPERTIES('skip.header.line.count'='1')")
+
+
+    //spark.sql("SELECT * FROM padron_txt2").show(false)
+
+
+    //6.3 - Enumera todos los barrios
+
+    spark.sql("SELECT distinct(DESC_BARRIO) FROM padron_txt2").show(false)
+
+    //6.4 - Crea una vista temporal de nombre "padron" y a través de ella cuenta el número de barrios
+    //diferentes que hay.
+
+    spark.sql("SELECT COUNT(DISTINCT(DESC_BARRIO)) FROM padron_txt2").show(false)
+
+    //6.5 - Crea una nueva columna que muestre la longitud de los campos de la columna
+    //DESC_DISTRITO y que se llame "longitud".
+
+    //REVISAR
+    spark.sql("ALTER TABLE padron_txt2 ADD COLUMNS (longitud INT)")
+    spark.sql("INSERT OVERWRITE TABLE padron_txt2 " +
+      "SELECT COD_DISTRITO, DESC_DISTRITO, COD_DIST_BARRIO, DESC_BARRIO, COD_BARRIO, COD_DIST_SECCION, COD_SECCION," +
+      " COD_EDAD_INT, ESPANOLESHOMBRES, ESPANOLESMUJERES, EXTRANJEROSHOMBRES, EXTRANJEROSMUJERES, LENGTH(DESC_DISTRITO) AS longitud" +
+      " from padron_txt2")
+    spark.sql("SELECT * FROM padron_txt2").show(false)
+
+    //6.6 - Crea una nueva columna que muestre el valor 5 para cada uno de los registros de la tabla.
+    spark.sql("ALTER TABLE padron_txt2 ADD COLUMNS (cinco INT)")
+    spark.sql("INSERT OVERWRITE TABLE padron_txt2 " +
+      "SELECT COD_DISTRITO, DESC_DISTRITO, COD_DIST_BARRIO, DESC_BARRIO, COD_BARRIO, COD_DIST_SECCION, COD_SECCION," +
+      " COD_EDAD_INT, ESPANOLESHOMBRES, ESPANOLESMUJERES, EXTRANJEROSHOMBRES, EXTRANJEROSMUJERES, longitud, CAST('5' AS INT) AS cinco" +
+      " from padron_txt2")
+    spark.sql("SELECT * FROM padron_txt2").show(false)
+
+    //6.7 - Borra esta columna. (BORRA LAS DOS COLUMNAS longitud y cinco)
+
+    //NOT ALLOWED
+    //spark.sql("ALTER TABLE padron_txt2 REPLACE COLUMNS(COD_DISTRITO int, DESC_DISTRITO string, COD_DIST_BARRIO int" +
+    //  ", DESC_BARRIO int, COD_BARRIO string, COD_DIST_SECCION int, COD_SECCION int, COD_EDAD_INT int" +
+    //  ", EspanolesHombres int, EspanolesMujeres int, ExtranjerosHombres int, ExtranjerosMujeres int)")
+
+    //6.8 - Particiona el DataFrame por las variables DESC_DISTRITO y DESC_BARRIO. (AHORA EN HIVE)
+
+
+    spark.sqlContext.setConf("hive.exec.dynamic.partition", "true")
+    spark.sqlContext.setConf("hive.exec.dynamic.partition.mode", "nonstrict")
+    spark.sqlContext.setConf("hive.exec.max.dynamic.partitions", "10000")
+
+    //spark.sql("CREATE TABLE IF NOT EXISTS padron_particionado (DESC_DISTRITO string, " +
+    //  "COD_DIST_BARRIO int, DESC_BARRIO string, " +
+    //  "COD_DIST_SECCION int, COD_SECCION int, " +
+    //  "COD_EDAD_INT int, EspanolesHombres int, " +
+    //  "EspanolesMujeres int, ExtranjerosHombres int, " +
+    //  "ExtranjerosMujeres int) " +
+    //  "partitioned by (COD_DISTRITO int, COD_BARRIO int) " +
+    //  "STORED AS PARQUET")
+
+    //spark.sql( "INSERT INTO TABLE padron_particionado " +
+    //  "PARTITION(COD_DISTRITO, COD_BARRIO) " +
+    //  "SELECT COD_DISTRITO, DESC_DISTRITO, COD_DIST_BARRIO, DESC_BARRIO, COD_BARRIO, COD_DIST_SECCION, COD_SECCION, " +
+    //  "COD_EDAD_INT, ESPANOLESHOMBRES, ESPANOLESMUJERES, EXTRANJEROSHOMBRES, EXTRANJEROSMUJERES FROM padron_txt2")
+
+    //spark.sql("SELECT * FROM padron_particionado").show()
+
+
+    //6.9 - Almacénalo en caché. Consulta en el puerto 4040 (UI de Spark) de tu usuario local el estado
+    //de los rdds almacenados.
+
+    //NO SOPORTADO
+
+    //6.10 - Lanza una consulta contra el DF resultante en la que muestre el número total de
+    //"espanoleshombres", "espanolesmujeres", extranjeroshombres" y "extranjerosmujeres"
+    //para cada barrio de cada distrito. Las columnas distrito y barrio deben ser las primeras en
+    //aparecer en el show. Los resultados deben estar ordenados en orden de más a menos
+    //según la columna "extranjerosmujeres" y desempatarán por la columna
+    //"extranjeroshombres".
+
+
+
+    //6.11 - Elimina el registro en caché.
+
+    //NO SOPORTADO
+
+    //6.12 - Crea un nuevo DataFrame a partir del original que muestre únicamente una columna con
+    //DESC_BARRIO, otra con DESC_DISTRITO y otra con el número total de "espanoleshombres"
+    //residentes en cada distrito de cada barrio. Únelo (con un join) con el DataFrame original a
+    //través de las columnas en común
+
+    spark.sql("CREATE TABLE padron_espanoles_hombres " +
+      " ROW FORMAT DELIMITED" +
+      " FIELDS TERMINATED BY '|'" +
+      " STORED AS TEXTFILE" +
+      " SELECT DESC_DISTRITO, DESC_BARRIO, SUM(EspanolesHombres) " +
+      "FROM padron_txt2 "+
+      "GROUP BY DESC_DISTRITO, DESC_BARRIO"
+    )
+
+    spark.sql("ALTER TABLE padron_espanoles_hombres SET TBLPROPERTIES('skip.header.line.count'='1')")
+
+
+    spark.sql("SELECT * FROM padron_espanoles_hombres LIMIT 10").show()
+
+    spark.sql("SELECT * FROM padron_txt2 pt INNER JOIN padron_espanoles_hombres pe ON" +
+      " (pe.DESC_BARRIO = pt.DESC_BARRIO AND pt.DESC_DISTRITO = pe.DESC_DISTRITO)").show()
+
+    //6.13 - Repite la función anterior utilizando funciones de ventana. (over(Window.partitionBy.....))
+
+    //6.14 - Mediante una función Pivot muestra una tabla (que va a ser una tabla de contingencia) que
+    //contenga los valores totales ()la suma de valores) de espanolesmujeres para cada distrito y
+    //en cada rango de edad (COD_EDAD_INT). Los distritos incluidos deben ser únicamente
+    //CENTRO, BARAJAS y RETIRO y deben figurar como columnas . El aspecto debe ser similar a
+    //este:
+
+    spark.sql("CREATE TABLE padron_espanoles_mujeres " +
+      " ROW FORMAT DELIMITED" +
+      " FIELDS TERMINATED BY '|'" +
+      " STORED AS TEXTFILE" +
+      " SELECT CAST(COD_EDAD_INT AS INTEGER) AS COD_EDAD_INT, Sum(CASE " +
+      "WHEN DESC_DISTRITO = 'CENTRO' THEN espanolesmujeres " +
+      "ELSE '0'" +
+      " END) AS CENTRO, Sum(CASE " +
+      "WHEN DESC_DISTRITO = 'BARAJAS' THEN espanolesmujeres ELSE '0'" +
+      " END) AS BARAJAS" +
+      " FROM padron_txt2" +
+      " GROUP BY COD_EDAD_INT" +
+      " ORDER BY COD_EDAD_INT")
+
+    spark.sql("SELECT * FROM padron_espanoles_mujeres").show(false)
+
+    //6.15 - Utilizando este nuevo DF, crea 3 columnas nuevas que hagan referencia a qué porcentaje
+    //de la suma de "espanolesmujeres" en los tres distritos para cada rango de edad representa
+    //cada uno de los tres distritos. Debe estar redondeada a 2 decimales. Puedes imponerte la
+    //condición extra de no apoyarte en ninguna columna auxiliar creada para el caso.
+
+
+    spark.sql("SELECT COD_EDAD_INT, CENTRO, ROUND((CENTRO/(CENTRO+BARAJAS)) * 100, 2) AS PORC_CENTRO," +
+      "BARAJAS, ROUND((BARAJAS/(CENTRO+BARAJAS)) * 100, 2) AS PORC_BARAJAS " +
+      "FROM padron_espanoles_mujeres " +
+      "WHERE COD_EDAD_INT IS NOT NULL").show(false)
+
+    //6.16 - Guarda el archivo csv original particionado por distrito y por barrio (en ese orden) en un
+    //directorio local. Consulta el directorio para ver la estructura de los ficheros y comprueba
+    //que es la esperada.
+
+    // UNA VEZ CREAMOS LA TABLA CON SPARK SQL (A TRAVES DE HIVE) YA SE GUARDA
+
+    //6.17 - Haz el mismo guardado pero en formato parquet. Compara el peso del archivo con el
+    //resultado anterior.
+
+    // UNA VEZ CREAMOS LA TABLA CON SPARK SQL (A TRAVES DE HIVE) YA SE GUARDA
+
+
+    spark.sql("DROP TABLE padron")
+
+    spark.sql("DROP TABLE padron_txt3")
+    spark.sql("DROP TABLE padron_espanoles_hombres")
+    spark.sql("DROP TABLE  padron_espanoles_mujeres")
+    spark.sql("DROP TABLE  padron_particionado")
 
 		
 
