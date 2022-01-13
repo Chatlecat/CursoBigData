@@ -78,6 +78,18 @@ Ejercicios Del Padrón de Madrid
 
 
 
+		CREATE TABLE IF NOT EXISTS padron_regex(COD_DISTRITO int, DESC_DISTRITO string, 
+		COD_DIST_BARRIO int, DESC_BARRIO string, COD_BARRIO int, COD_DIST_SECCION int,
+		COD_EDAD_INT int, EspanolesHombres int, EspanolesMujeres int, ExtranjerosHombres int,
+		ExtranjerosMujeres int)
+		ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.RegexSerDe'
+		WITH SERDEPROPERTIES ('input.regex'=
+		'"(.*)";"(.*)";"(.*)";"(.*)";"(.*)";"(.*?)";"(.*?)";"(.*?)";"(.*?)";"(.*?)";"(.*?)";"(.*?)"')
+		STORED AS TEXTFILE
+		tblproperties("skip.header.line.count"="1");
+
+
+
 2) El formato columnar: parquet.
 	2.1-¿Qué es CTAS?
 		
